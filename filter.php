@@ -41,11 +41,22 @@ class FilterComponent extends Object {
 	/**
 	 * Before any Controller action
 	 */
-	function initialize(&$controller) {
+	function initialize(&$controller, $settings = array()) {
 		// for index actions
-		if($controller->action == 'index') {
+		if (!isset($settings['actions']) || empty($settings['actions'])) {
+			$actions = array('index');
+		} else {
+			$actions = $settings['actions'];
+		}
+		foreach($actions as $action){
+			$this->processAction($controller, $action);
+		}
+	}
+	
+	function processAction($controller, $controllerAction){
+		if($controller->action == $controllerAction) {
 			// setup filter component
-			$this->filter = $this->process($controller);
+			$this->filter = $this->processFilters($controller);
 			$url = $this->url;
 			if(empty($url)) {
 				$url = '/';
@@ -53,9 +64,8 @@ class FilterComponent extends Object {
 			$this->filterOptions = array('url' => array($url));
 			// setup default datetime filter option
 			$this->formOptionsDatetime = array('type' => 'date', 'dateFormat' => 'DMY', 'empty' => '-', 'minYear' => date("Y")-2, 'maxYear' => date("Y"));
-			// reset filters
-			if(isset($this->data['reset']) || isset($this->data['cancel'])) {
-				$this->redirect(array('action' => 'index'));
+			if(isset($controller->data['reset']) || isset($controller->data['cancel'])) {
+				$controller->redirect(array('action' => 'index'));
 			}
 		}
 	}
@@ -90,7 +100,7 @@ class FilterComponent extends Object {
 	 * @param array $whiteList contains list of allowed filter attributes
 	 * @access public
 	 */
-	function process($controller, $whiteList = null){
+	function processFilters($controller, $whiteList = null){
 		$controller = $this->_prepareFilter($controller);
 		$ret = array();
 		if(isset($controller->data)){
