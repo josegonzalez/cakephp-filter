@@ -1,6 +1,10 @@
 This component is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
 
-That's a lot of forks... Anyways, usage is simple
+That's a lot of forks...
+
+Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but to each their own).
+
+Anyways, usage is simple.
 
 
 1. Move the filter.php file to your components folder (directory structure should be app/controllers/components/filter.php).
@@ -42,8 +46,7 @@ That's a lot of forks... Anyways, usage is simple
 At this point, everything should theoretically work.
 
 TODO:
-1. Setup hasOne filtering (eg. User hasOne Profile)
-2. Better code commenting
-3. Refactor datetime filtering for ranges
-4. Support jQuery Datepicker
-5. A better readme file
+1. Better code commenting
+2. Refactor datetime filtering for ranges
+3. Support jQuery Datepicker
+4. A better readme file
