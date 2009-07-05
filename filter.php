@@ -115,6 +115,8 @@ class FilterComponent extends Object {
 					$columns = $controller->{$key}->getColumnTypes();
 				} elseif (isset($controller->{$controller->modelClass}->belongsTo[$key])) {
 					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
+				} elseif (isset($controller->{$controller->modelClass}->hasOne[$key])) {
+					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
 				}
 				// if columns exist
 				if(!empty($columns)) {
