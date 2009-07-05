@@ -6,8 +6,11 @@
  * @modified and extended by Maciej Grajcarek - http://blog.uplevel.pl
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
- * @author Jose Diaz-Gonzalez
  * @version 0.3
+ * @author Jose Diaz-Gonzalez <support@savant.be>
+ * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @package	app
+ * @subpackage app.controller.components
  */
 class FilterComponent extends Object {
 	/**
