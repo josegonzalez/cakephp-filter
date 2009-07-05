@@ -5,7 +5,9 @@
  * @original concept by Nik Chankov - http://nik.chankov.net
  * @modified and extended by Maciej Grajcarek - http://blog.uplevel.pl
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
- * @version 0.1
+ * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
+ * @author Jose Diaz-Gonzalez
+ * @version 0.2
  */
 class FilterComponent extends Object {
 	/**
@@ -31,11 +33,11 @@ class FilterComponent extends Object {
 	 */
 	 var $url = '';
 
-
 	// class variables
 	var $filter = array();
 	var $formOptionsDatetime = array();
 	var $filterOptions = NULL;
+
 	/**
 	 * Before any Controller action
 	 */
