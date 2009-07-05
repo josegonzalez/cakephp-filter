@@ -7,7 +7,7 @@
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
  * @author Jose Diaz-Gonzalez
- * @version 0.2
+ * @version 0.3
  */
 class FilterComponent extends Object {
 	/**
