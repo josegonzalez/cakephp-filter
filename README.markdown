@@ -4,19 +4,21 @@ That's a lot of forks...
 
 Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but to each their own).
 
-Anyways, usage is simple.
+## Installation
+- Clone from github : in your plugin directory type `git clone git://github.com/josegonzalez/filter-component.git filter`
+- Add as a git submodule : in your plugin directory type `git submodule add git://github.com/josegonzalez/filter-component.git filter`
+- Download an archive from github and extract it in `/plugins/filter`
 
-
-1. Move the filter.php file to your components folder (directory structure should be app/controllers/components/filter.php).
-2. Include the component in your controller (AppController or otherwise)
-	var $components = array('Filter');
-3. Use something like the following in your index
+## Usage
+1. Include the component in your controller (AppController or otherwise)
+	var $components = array('Filter.Filter');
+2. Use something like the following in your index
 	function index() {
 		$filterOptions = $this->Filter->filterOptions;
 		$posts = $this->paginate(null, $this->Filter->filter);
 		$this->set(compact('filterOptions', 'posts'));
 	}
-4. Setup your view correctly:
+3. Setup your view correctly:
 	<?php echo $form->create('Post', array('action' => 'index', 'id' => 'filters')); ?>
 	<table cellpadding="0" cellspacing="0">
 		<thead>
@@ -45,8 +47,8 @@ Anyways, usage is simple.
 
 At this point, everything should theoretically work.
 
-TODO:
+## TODO:
 1. Better code commenting
 2. Refactor datetime filtering for ranges
 3. Support jQuery Datepicker
-4. A better readme file
+4. Allow the action to be configurable
