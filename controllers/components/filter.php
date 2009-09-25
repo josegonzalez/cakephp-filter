@@ -7,7 +7,7 @@
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
  * @modified further by Jeffrey Marvin - http://blitztiger.com
- * @version 0.3
+ * @version 0.4
  * @author Jeffrey Marvin <support@blitztiger.com>
  * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
  * @package	app
@@ -218,8 +218,7 @@ class FilterComponent extends Object {
 			if($field = 'parsed'){
 				$parsed = true;
 			}
-			else 
-			if(!in_array($field, $this->paginatorParams)) {
+			else if(!in_array($field, $this->paginatorParams)) {
 				$fields = explode('.', $field);
 				if (sizeof($fields) == 1) {
 					$filter[$controller->modelClass][$field] = $value;
@@ -227,6 +226,10 @@ class FilterComponent extends Object {
 					$filter[$fields[0]][$fields[1]] = $value;
 				}
 			}
+		}
+		//debug
+		foreach($filter as $k => $v){ 
+			echo ($k . " : " . $v . "<br />");
 		}
 		if (!empty($filter)) {
 			return $filter;
