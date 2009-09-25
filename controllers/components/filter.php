@@ -36,6 +36,11 @@ class FilterComponent extends Object {
 	 *  Url variable used in paginate helper (array('url'=>$url));
 	 */
 	 var $url = '';
+	
+	/**
+	 * Used to tell whether the data options have been parsed
+	 */
+	var $parsed = false;
 
 	// class variables
 	var $filter = array();
@@ -155,6 +160,10 @@ class FilterComponent extends Object {
 					if(count($value) == 0){
 						unset($controller->data[$key]);
 					}
+					if(!$this->parsed){
+						$this->url .= '/parsed:true';
+						$controller->redirect('/' . $controller->name . '/index' . $this->url);
+					}
 				}
 			}
 		}
@@ -206,6 +215,10 @@ class FilterComponent extends Object {
 		$controller->params['named'] = $sanit->clean($controller->params['named'], array('encode' => false));
 
 		foreach($controller->params['named'] as $field => $value) {
+			if($field = 'parsed'){
+				$parsed = true;
+			}
+			else 
 			if(!in_array($field, $this->paginatorParams)) {
 				$fields = explode('.', $field);
 				if (sizeof($fields) == 1) {
@@ -228,11 +241,14 @@ class FilterComponent extends Object {
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
+//		foreach($date as $k => $v){
+//			echo ($k . ' : ' . $v . "<br />"); //debugging stuffs
+//		}
 		return $date['year'] . '-' 
 			. $date['month'] . '-' 
 			. $date['day'] . ' ' 
 			. (($date['meridian'] == 'pm') ? $date['hour'] : $date['hour'] + 12) . ':' 
-			. (($date['min'] < 10) ? '0' . $date['min'] : $date['min']) ;
+			. (($date['min'] < 10) ? '0' . $date['min'] : $date['min']);
 	}
 }
 ?>
