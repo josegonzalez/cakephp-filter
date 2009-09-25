@@ -218,14 +218,13 @@ class FilterComponent extends Object {
 			if($field == 'parsed'){
 				$parsed = true;
 			}
-			if(!in_array($field, $this->paginatorParams)) {
+			if(!in_array($field, $this->paginatorParams) && $field != 'parsed') {
 				$fields = explode('.', $field);
 				if (sizeof($fields) == 1) {
 					$filter[$controller->modelClass][$field] = $value;
 				} else {
 					$filter[$fields[0]][$fields[1]] = $value;
-				}	
-				echo ($field . " : " . $value . "<br />");		//DEBUG
+				}
 			}
 		}
 		if (!empty($filter)) {
