@@ -223,38 +223,16 @@ class FilterComponent extends Object {
 
 	/**
 	 * Prepares a date array for a Mysql where clause
-	 * @author James Fairhurst
-	 * @modified by Jeffrey Marvin
+	 * @author Jeffrey Marvin
 	 * @param array $date
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
-		// init
-		$year = '';
-		$day = '';
-		$month = '';
-		// reverse array so that dd-mm-yyyy becomes yyyy-mm-dd
-		$date = array_reverse($date);
-		// loop through date
-		
-		foreach($date as $key => $value) {
-			// if d/m/y has been entered
-			if(!empty($value)) {
-				if($key == 'year') {
-					$year .=  $value;
-				}
-				if($key == 'month') {
-					$month .= '-' . $value;
-					if(empty($date['day'])){
-						$month .= '-';
-					}
-				}
-				if($key == 'day') {
-					$day .= '-' . $value;
-				}
-			}
-		}
-		return $year . $month . $day;
+		return $date['year'] . '-' 
+			. $date['month'] . '-' 
+			. $date['day'] . ' ' 
+			. (($date['meridian'] == 'pm') ? $date['hour'] : $date['hour'] + 12) . ':' 
+			. (($date['min'] < 10) ? '0' . $date['min'] : $date['min']) ;
 	}
 }
 ?>
