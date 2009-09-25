@@ -6,8 +6,9 @@
  * @modified and extended by Maciej Grajcarek - http://blog.uplevel.pl
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
+ * @modified further by Jeffrey Marvin - http://blitztiger.com
  * @version 0.3
- * @author Jose Diaz-Gonzalez <support@savant.be>
+ * @author Jeffrey Marvin <support@blitztiger.com>
  * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
  * @package	app
  * @subpackage app.controller.components
@@ -223,35 +224,37 @@ class FilterComponent extends Object {
 	/**
 	 * Prepares a date array for a Mysql where clause
 	 * @author James Fairhurst
-	 * @param array $arr
+	 * @modified by Jeffrey Marvin
+	 * @param array $date
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
 		// init
-		$str = '';
+		$year = '';
+		$day = '';
+		$month = '';
 		// reverse array so that dd-mm-yyyy becomes yyyy-mm-dd
 		$date = array_reverse($date);
 		// loop through date
+		
 		foreach($date as $key => $value) {
 			// if d/m/y has been entered
 			if(!empty($value)) {
-				// seperate with '-'
-				$str .= '-' . $value;
-				// remove first '-'
 				if($key == 'year') {
-					$str = str_replace('-', '', $str);
+					$year .=  $value;
 				}
-				// only add if day is empty
-				if($key == 'month' && empty($date['day'])) {
-					$str .= '-';
+				if($key == 'month') {
+					$month .= '-' . $value;
+					if(empty($date['day'])){
+						$month .= '-';
+					}
 				}
-				// add final space
 				if($key == 'day') {
-					$str .= ' ';
+					$day .= '-' . $value;
 				}
 			}
 		}
-	return $str;
+		return $year . $month . $day;
 	}
 }
 ?>
