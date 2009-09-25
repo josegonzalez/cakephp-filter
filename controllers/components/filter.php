@@ -215,7 +215,7 @@ class FilterComponent extends Object {
 		$controller->params['named'] = $sanit->clean($controller->params['named'], array('encode' => false));
 
 		foreach($controller->params['named'] as $field => $value) {
-			if($field == 'parsed'){
+			if(strcmp($field, 'parsed') == 0){
 				$parsed = true;
 			}
 			if(!in_array($field, $this->paginatorParams) && $field != 'parsed') {
