@@ -163,7 +163,7 @@ class FilterComponent extends Object {
 					}
 					if(!$this->parsed){
 						$this->url .= '/parsed:true';
-						$controller->redirect('/' . $controller->name . '/index' . $this->url);
+						//$controller->redirect('/' . $controller->name . '/index' . $this->url);
 					}
 				}
 			}
