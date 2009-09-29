@@ -65,7 +65,7 @@ At this point, everything should theoretically work.
 ## TODO:
 1. Better code commenting
 2. Support Datetime - Mostly Done
-3. Support URL redirects and parsing 
+3. Support URL redirects and parsing - Mostly Done
 4. Refactor datetime filtering for ranges
 5. Allow the action to be configurable
 6. Support jQuery Datepicker
