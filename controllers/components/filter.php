@@ -218,7 +218,7 @@ class FilterComponent extends Object {
 		$sanit = new Sanitize();
 		$controller->params['named'] = $sanit->clean($controller->params['named'], array('encode' => false));
 		
-		if($controller->params['named']['Filter.parsed']){
+		if(isset($controller->params['named']['Filter.parsed'])){
 			$this->parsed = true;
 			$filter = array();
 		}
