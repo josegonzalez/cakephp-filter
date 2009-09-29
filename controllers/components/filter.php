@@ -37,11 +37,16 @@ class FilterComponent extends Object {
 	 *  Url variable used in paginate helper (array('url'=>$url));
 	 */
 	 var $url = '';
-	
+
 	/**
 	 * Used to tell whether the data options have been parsed
 	 */
 	var $parsed = false;
+	
+	/**
+	 * Used to tell whether the data options have been parsed
+	 */
+	var $redirect = false;
 
 	// class variables
 	var $filter = array();
@@ -50,6 +55,8 @@ class FilterComponent extends Object {
 
 	/**
 	 * Before any Controller action
+	 * @param array settings['actions']  the action the filter is to be applied to, 
+	 * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url
 	 */
 	function initialize(&$controller, $settings = array()) {
 		// for index actions
@@ -57,6 +64,11 @@ class FilterComponent extends Object {
 			$actions = array('index');
 		} else {
 			$actions = $settings['actions'];
+		}
+		if (!isset($settings['redirect']) || empty($settings['redirect'])) {
+			$this->redirect = false;
+		} else {
+			$this->redirect = $settings['redirect'];
 		}
 		foreach($actions as $action){
 			$this->processAction($controller, $action);
@@ -164,7 +176,7 @@ class FilterComponent extends Object {
 					if(count($value) == 0){
 						unset($controller->data[$key]);
 					}
-					if(!$this->parsed){
+					if(!$this->parsed && $this->redirect){
 						$this->url = '/Filter.parsed:true' . $this->url;
 						$controller->redirect('/' . $controller->name . '/index' . $this->url . '/');
 					}
@@ -248,11 +260,12 @@ class FilterComponent extends Object {
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
-		return $date['year'] . '-' 
-			. $date['month'] . '-' 
-			. $date['day'] . ' ' 
-			. (($date['meridian'] == 'pm') ? $date['hour'] : $date['hour']) . ':' 
-			. (($date['min'] < 10) ? '0' . $date['min'] : $date['min']);
+		return $date['year']
+			. '-' . $date['month']
+			. '-' . $date['day']
+			. ' ' . (($date['meridian'] == 'pm' && $date['hour'] != 12) ? $date['hour'] : $date['hour'])
+			. ':' . (($date['min'] < 10) ? '0' . $date['min'] : $date['min'])
+			;
 	}
 }
 ?>
