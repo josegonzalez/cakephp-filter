@@ -26,11 +26,12 @@ Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but
 3. Setup your view correctly:
 
 -Option 1: Helper
-	Use the helper In between the row with all the column headers and the first row of data add: 
-		<?php echo $filter->form('Post', array('name')) ?>  
-	The first parameter is the model name. 
-	The second parameter is an array of fields. 
-	If you don't want to filter a particular field pass null in that spot.
+
+Use the helper In between the row with all the column headers and the first row of data add: 
+	<?php echo $filter->form('Post', array('name')) ?>  
+The first parameter is the model name. 
+The second parameter is an array of fields. 
+If you don't want to filter a particular field pass null in that spot.
 
 -Option 2: Manually
 	<?php echo $form->create('Post', array('action' => 'index', 'id' => 'filters')); ?>
