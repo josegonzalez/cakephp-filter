@@ -1,9 +1,11 @@
 Filter Paginated Indexes using the Filter Component Plugin
 
 ## Background
-This component is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
+This component is a fork of Jose Gonzalez's Filter component(http://github.com/josegonzalez/cakephp-filter-component), which is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
 
 That's a lot of forks...
+
+This also contains a view helper made by 'mcurry' (http://github.com/mcurry/cakephp-filter-component).
 
 Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but to each their own).
 
@@ -22,6 +24,14 @@ Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but
 		$this->set(compact('filterOptions', 'posts'));
 	}
 3. Setup your view correctly:
+-Option 1: Helper
+	Use the helper In between the row with all the column headers and the first row of data add: 
+		<?php echo $filter->form('Post', array('name')) ?>  
+			The first parameter is the model name. 
+			The second parameter is an array of fields. 
+	If you don't want to filter a particular field pass null in that spot.
+
+-Option 2: Manually
 	<?php echo $form->create('Post', array('action' => 'index', 'id' => 'filters')); ?>
 	<table cellpadding="0" cellspacing="0">
 		<thead>
@@ -52,8 +62,8 @@ At this point, everything should theoretically work.
 
 ## TODO:
 1. Better code commenting
-2. Support Datetime
-3. Support URL redirects and parsing
+2. Support Datetime - Mostly Done
+3. Support URL redirects and parsing 
 4. Refactor datetime filtering for ranges
 5. Allow the action to be configurable
 6. Support jQuery Datepicker
