@@ -54,7 +54,7 @@ class FilterComponent extends Object {
 	function initialize(&$controller, $settings = array()) {
 		// for index actions
 		if (!isset($settings['actions']) || empty($settings['actions'])) {
-			$actions = array('index', 'admin_index');
+			$actions = array('index');
 		} else {
 			$actions = $settings['actions'];
 		}
@@ -75,7 +75,10 @@ class FilterComponent extends Object {
 			// setup default datetime filter option
 			$this->formOptionsDatetime = array('type' => 'date', 'dateFormat' => 'DMY', 'empty' => '-', 'minYear' => date("Y")-2, 'maxYear' => date("Y"));
 			if(isset($controller->data['reset']) || isset($controller->data['cancel'])) {
-				$controller->redirect(array('action' => 'index'));
+				$this->filter = array();
+				$this->url = '/';
+				$this->filterOptions = array();
+				$controller->redirect('/' . $controller->name . '/index/');
 			}
 		}
 	}
@@ -162,8 +165,8 @@ class FilterComponent extends Object {
 						unset($controller->data[$key]);
 					}
 					if(!$this->parsed){
-						$this->url .= '/parsed:true';
-						//$controller->redirect('/' . $controller->name . '/index' . $this->url);
+						$this->url = '/Filter.parsed:true' . $this->url;
+						$controller->redirect('/' . $controller->name . '/index' . $this->url . '/');
 					}
 				}
 			}
@@ -214,12 +217,14 @@ class FilterComponent extends Object {
 		App::import('Sanitize');
 		$sanit = new Sanitize();
 		$controller->params['named'] = $sanit->clean($controller->params['named'], array('encode' => false));
+		
+		if($controller->params['named']['Filter.parsed']){
+			$this->parsed = true;
+			$filter = array();
+		}
 
 		foreach($controller->params['named'] as $field => $value) {
-			if(strcmp($field, 'parsed') == 0){
-				$parsed = true;
-			}
-			if(!in_array($field, $this->paginatorParams) && $field != 'parsed') {
+			if(!in_array($field, $this->paginatorParams) && $field != 'Filter.parsed') {
 				$fields = explode('.', $field);
 				if (sizeof($fields) == 1) {
 					$filter[$controller->modelClass][$field] = $value;
@@ -241,13 +246,10 @@ class FilterComponent extends Object {
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
-//		foreach($date as $k => $v){
-//			echo ($k . ' : ' . $v . "<br />"); //debugging stuffs
-//		}
 		return $date['year'] . '-' 
 			. $date['month'] . '-' 
 			. $date['day'] . ' ' 
-			. (($date['meridian'] == 'pm') ? $date['hour'] : $date['hour'] + 12) . ':' 
+			. (($date['meridian'] == 'pm') ? $date['hour'] : $date['hour']) . ':' 
 			. (($date['min'] < 10) ? '0' . $date['min'] : $date['min']);
 	}
 }
