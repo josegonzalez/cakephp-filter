@@ -62,6 +62,10 @@ If you don't want to filter a particular field pass null in that spot.
 
 At this point, everything should theoretically work.
 
+To set it up for redirecting to the url with filters in it (which defaults to off),
+add a line to the controller:
+	$this->Filter->initialize($this, array('redirect' => 'true'));
+
 ## TODO:
 1. Better code commenting
 2. Support Datetime - Mostly Done
