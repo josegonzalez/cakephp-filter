@@ -219,8 +219,10 @@ class FilterComponent extends Object {
 		$controller->params['named'] = $sanit->clean($controller->params['named'], array('encode' => false));
 		
 		if(isset($controller->params['named']['Filter.parsed'])){
-			$this->parsed = true;
-			$filter = array();
+			if($controller->params['named']['Filter.parsed']){
+				$this->parsed = true;
+				$filter = array();
+			}
 		}
 
 		foreach($controller->params['named'] as $field => $value) {
