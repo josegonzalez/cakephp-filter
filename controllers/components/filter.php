@@ -7,6 +7,7 @@
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
  * @modified further by Jeffrey Marvin - http://blitztiger.com
+ * @incoroporating changes made by 'mcurry' - http://github.com/mcurry/
  * @version 0.4
  * @author Jeffrey Marvin <support@blitztiger.com>
  * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
@@ -45,7 +46,7 @@ class FilterComponent extends Object {
 	// class variables
 	var $filter = array();
 	var $formOptionsDatetime = array();
-	var $filterOptions = NULL;
+	var $filterOptions = array();
 
 	/**
 	 * Before any Controller action
@@ -53,7 +54,7 @@ class FilterComponent extends Object {
 	function initialize(&$controller, $settings = array()) {
 		// for index actions
 		if (!isset($settings['actions']) || empty($settings['actions'])) {
-			$actions = array('index');
+			$actions = array('index', 'admin_index');
 		} else {
 			$actions = $settings['actions'];
 		}
@@ -100,7 +101,7 @@ class FilterComponent extends Object {
 				}
 			}
 		}
-	return $selected;
+		return $selected;
 	}
 
 	/**
@@ -167,7 +168,7 @@ class FilterComponent extends Object {
 				}
 			}
 		}
-	return $ret;
+		return $ret;
 	}
 
 	/**
@@ -197,7 +198,7 @@ class FilterComponent extends Object {
 			$filter = $this->_checkParams($controller);
 		}
 		$controller->data = $filter;
-	return $controller;
+		return $controller;
 	}
 
 	/**
