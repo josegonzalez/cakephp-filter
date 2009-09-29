@@ -24,6 +24,7 @@ Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but
 		$this->set(compact('filterOptions', 'posts'));
 	}
 3. Setup your view correctly:
+
 -Option 1: Helper
 	Use the helper In between the row with all the column headers and the first row of data add: 
 		<?php echo $filter->form('Post', array('name')) ?>  
