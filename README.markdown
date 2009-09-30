@@ -62,11 +62,16 @@ If you don't want to filter a particular field pass null in that spot.
 
 At this point, everything should theoretically work.
 
-For action(s) other than index, add a line to the controller:
+For action(s) other than index, add a line to the controller such as this:
 	$this->Filter->initialize($this, array('actions' => 'admin_index'));
 
 To set it up for redirecting to the url with filters in it (which defaults to off), add a line to the controller such as this:
 	$this->Filter->initialize($this, array('redirect' => 'true'));
+
+To set it up to include time in the filter, add a line to the controller such as this:
+	$this->Filter->initialize($this, array('useTime' => 'true'));
+	
+These different initialize options can be combined in the array.
 
 ## TODO:
 1. Better code commenting
