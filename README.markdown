@@ -56,7 +56,7 @@ If you don't want to filter a particular field pass null in that spot.
 	<?php echo $form->end(); ?>
 	<div class="paging">
 		<?php echo $paginator->prev('<< '.__('previous', true), $filter_options, null, array('class' => 'disabled'));?>
-	 | 	<?php echo $paginator->numbers($filter_options);?>
+		<?php echo $paginator->numbers($filter_options);?>
 		<?php echo $paginator->next(__('next', true).' >>', $filter_options, null, array('class' =>' disabled'));?>
 	</div>
 
@@ -70,7 +70,7 @@ To set it up for redirecting to the url with filters in it (which defaults to of
 
 To set it up to include time in the filter, add a line to the controller such as this:
 	$this->Filter->initialize($this, array('useTime' => true));
-	
+
 These different initialize options can be combined in the array.
 
 ## TODO:
