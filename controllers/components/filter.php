@@ -44,9 +44,14 @@ class FilterComponent extends Object {
 	var $parsed = false;
 	
 	/**
-	 * Used to tell whether the data options have been parsed
+	 * Used to tell whether to redirect so the url includes filter data
 	 */
 	var $redirect = false;
+	
+	/**
+	 * Used to tell whether time should be used in the filtering
+	 */
+	var $useTime = false;
 
 	// class variables
 	var $filter = array();
@@ -69,6 +74,11 @@ class FilterComponent extends Object {
 			$this->redirect = false;
 		} else {
 			$this->redirect = $settings['redirect'];
+		}
+		if (!isset($settings['useTime']) || empty($settings['useTime'])) {
+			$this->useTime = false;
+		} else {
+			$this->useTime = $settings['useTime'];
 		}
 		foreach($actions as $action){
 			$this->processAction($controller, $action);
@@ -260,12 +270,19 @@ class FilterComponent extends Object {
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
-		return $date['year']
-			. '-' . $date['month']
-			. '-' . $date['day']
-			. ' ' . (($date['meridian'] == 'pm' && $date['hour'] != 12) ? $date['hour'] : $date['hour'])
-			. ':' . (($date['min'] < 10) ? '0' . $date['min'] : $date['min'])
+		if($this->useTime){
+			return $date['year']
+				. '-' . $date['month']
+				. '-' . $date['day']
+				. ' ' . (($date['meridian'] == 'pm' && $date['hour'] != 12) ? $date['hour'] + 12 : $date['hour'])
+				. ':' . (($date['min'] < 10) ? '0' . $date['min'] : $date['min'])
 			;
+		} else {
+			return $date['year']
+				. '-' . $date['month']
+				. '-' . $date['day']
+			;
+		}
 	}
 }
 ?>
