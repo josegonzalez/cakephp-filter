@@ -66,10 +66,10 @@ For action(s) other than index, add a line to the controller such as this:
 	$this->Filter->initialize($this, array('actions' => 'admin_index'));
 
 To set it up for redirecting to the url with filters in it (which defaults to off), add a line to the controller such as this:
-	$this->Filter->initialize($this, array('redirect' => 'true'));
+	$this->Filter->initialize($this, array('redirect' => true));
 
 To set it up to include time in the filter, add a line to the controller such as this:
-	$this->Filter->initialize($this, array('useTime' => 'true'));
+	$this->Filter->initialize($this, array('useTime' => true));
 	
 These different initialize options can be combined in the array.
 
