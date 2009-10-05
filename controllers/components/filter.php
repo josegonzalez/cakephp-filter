@@ -61,25 +61,29 @@ class FilterComponent extends Object {
 	/**
 	 * Before any Controller action
 	 * @param array settings['actions']  the action the filter is to be applied to, 
-	 * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url
+	 * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url,
+	 * @param array settings['useTime'] is whether to filter date times with date in addition to time
 	 */
 	function initialize(&$controller, $settings = array()) {
-		// for index actions
+		// If no action(s) is/are specified, defaults to 'index'
 		if (!isset($settings['actions']) || empty($settings['actions'])) {
 			$actions = array('index');
 		} else {
 			$actions = $settings['actions'];
 		}
+		// If no setting for redirect is specified, defaults to not redirect
 		if (!isset($settings['redirect']) || empty($settings['redirect'])) {
 			$this->redirect = false;
 		} else {
 			$this->redirect = $settings['redirect'];
 		}
+		//If no setting for using time in addition to date for datetimes, defaults to not using time.
 		if (!isset($settings['useTime']) || empty($settings['useTime'])) {
 			$this->useTime = false;
 		} else {
 			$this->useTime = $settings['useTime'];
 		}
+		//Process all action specified.
 		foreach($actions as $action){
 			$this->processAction($controller, $action);
 		}
