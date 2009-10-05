@@ -160,17 +160,23 @@ class FilterComponent extends Object {
 	 * @access public
 	 */
 	function processFilters($controller, $whiteList = null){
+		//prepare the filters
 		$controller = $this->_prepareFilter($controller);
+		//initialize the return variable
 		$ret = array();
+		//check to see if there are models associated with the controller
 		if(isset($controller->data)){
-			// loop models
+			// loop through the models
 			foreach($controller->data as $key => $value) {
 				// get fieldnames from database of model
 				$columns = array();
+				//check to see if the model is set
 				if(isset($controller->{$key})) {
 					$columns = $controller->{$key}->getColumnTypes();
+				//check to see if what the model belongsTo is set
 				} elseif (isset($controller->{$controller->modelClass}->belongsTo[$key])) {
 					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
+				//checks to see if the model's hasOne is set
 				} elseif (isset($controller->{$controller->modelClass}->hasOne[$key])) {
 					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
 				}
@@ -210,6 +216,7 @@ class FilterComponent extends Object {
 					if(count($value) == 0){
 						unset($controller->data[$key]);
 					}
+					//If redirect has been set true, and the data had not been parsed before and put into the url, does it now
 					if(!$this->parsed && $this->redirect){
 						$this->url = '/Filter.parsed:true' . $this->url;
 						$controller->redirect('/' . $controller->name . '/index' . $this->url . '/');
