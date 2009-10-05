@@ -275,34 +275,43 @@ class FilterComponent extends Object {
 	 * @param object $controller the class of the controller which call this component
 	 */
 	function _checkParams($controller) {
+		//if there are no named params, blanks the filter
 		if (empty($controller->params['named'])) {
 			$filter = array();
 		}
-
+		//import the input sanitizer
 		App::import('Sanitize');
+		//initialize the input sanitizer
 		$sanit = new Sanitize();
+		//sanitize the inputs
 		$controller->params['named'] = $sanit->clean($controller->params['named'], array('encode' => false));
-		
+		//Checks to see if the filter has already pulled the data and put it in the url, and if so, sets the parsed variable to true
 		if(isset($controller->params['named']['Filter.parsed'])){
 			if($controller->params['named']['Filter.parsed']){
 				$this->parsed = true;
 				$filter = array();
 			}
 		}
-
+		//Cycle through the named params
 		foreach($controller->params['named'] as $field => $value) {
+			//If it isn't the parsed variable, and it isn't in the paginatorParams
 			if(!in_array($field, $this->paginatorParams) && $field != 'Filter.parsed') {
+				//Break the filter from the Model.FilteredItem into an array
 				$fields = explode('.', $field);
+				//if it was an item without the Model.FilteredItem style, assumes the controller's model class as the model
 				if (sizeof($fields) == 1) {
 					$filter[$controller->modelClass][$field] = $value;
+				//Otherwise uses what is specified
 				} else {
 					$filter[$fields[0]][$fields[1]] = $value;
 				}
 			}
 		}
+		//If the filter isn't empty, return the filter
 		if (!empty($filter)) {
 			return $filter;
 		}
+		//Otherwise return an empty array
 		return array();
 	}
 
@@ -313,6 +322,7 @@ class FilterComponent extends Object {
 	 * @return string
 	 */
 	function _prepare_datetime($date) {
+		//If it uses the time, breaks the datetime object into it's components and outputs the string
 		if($this->useTime){
 			return $date['year']
 				. '-' . $date['month']
@@ -320,6 +330,7 @@ class FilterComponent extends Object {
 				. ' ' . (($date['meridian'] == 'pm' && $date['hour'] != 12) ? $date['hour'] + 12 : $date['hour'])
 				. ':' . (($date['min'] < 10) ? '0' . $date['min'] : $date['min'])
 			;
+		//Otherwise it does the same thing but does not use the time parts of the date time.
 		} else {
 			return $date['year']
 				. '-' . $date['month']
