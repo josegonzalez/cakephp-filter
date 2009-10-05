@@ -124,17 +124,28 @@ class FilterComponent extends Object {
 	 * @return null|string
 	 */
 	function processDatetime($fieldname) {
+		//Create $selected
 		$selected = null;
+		//check to see that current field name is a field in the filter
 		if(isset($this->params['named'][$fieldname])) {
+			//Split the date on the '-'s
 			$exploded = explode('-', $this->params['named'][$fieldname]);
+			//check if the field contained anything
 			if(!empty($exploded)) {
+				//initialize $selected
 				$selected = '';
+				//cycle through the components of the datetime
 				foreach($exploded as $k => $e) {
+					//if there is no entry for the current part...
 					if(empty($e)) {
+						//if year, input 0000, else put 00
 						$selected .= (($k == 0) ? '0000' : '00');
+					//else
 					} else {
+						//add the current item to the string
 						$selected .= $e;
 					}
+					//add the dashes back into the string
 					if($k != 2) {$selected .= '-';}
 				}
 			}
