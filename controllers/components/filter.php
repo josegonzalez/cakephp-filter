@@ -233,27 +233,39 @@ class FilterComponent extends Object {
 	 * @param object $controller the class of the controller which call this component
 	 */
 	function _prepareFilter($controller) {
+		//initialize the filter
 		$filter = array();
+		//check to see if the controller's data is set
 		if(isset($controller->data)) {
-			//pr($controller);
+			//cycle through the models
 			foreach($controller->data as $model => $fields) {
+				//check if the field is an array
 				if(is_array($fields)) {
+					//goes through each sub field
 					foreach($fields as $key => $field) {
+						//if the field is blank, it is unset
 						if($field == '') {
 							unset($controller->data[$model][$key]);
 						}
 					}
 				}
 			}
+			//import the input sanitizer
 			App::import('Sanitize');
+			//initialize input sanitizer
 			$sanit = new Sanitize();
+			//sanitizes the inputs
 			$controller->data = $sanit->clean($controller->data, array('encode' => false));
+			//sets filter to the controller's data
 			$filter = $controller->data;
 		}
+		//if filter is empty, it checks the parameters in the url
 		if (empty($filter)) {
 			$filter = $this->_checkParams($controller);
 		}
+		//set's the controllers data to the filter
 		$controller->data = $filter;
+		//return the controller
 		return $controller;
 	}
 
