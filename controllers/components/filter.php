@@ -90,21 +90,30 @@ class FilterComponent extends Object {
 	}
 	
 	function processAction($controller, $controllerAction){
+		// check to see if the current action is one that the filter is being run on
 		if($controller->action == $controllerAction) {
 			// setup filter component
 			$this->filter = $this->processFilters($controller);
+			//get the url
 			$url = $this->url;
+			//If there is no url, set it to '/'
 			if(empty($url)) {
 				$url = '/';
 			}
+			//set the url in the filter options
 			$this->filterOptions = array('url' => array($url));
 			// setup default datetime filter option
 			$this->formOptionsDatetime = array('type' => 'date', 'dateFormat' => 'DMY', 'empty' => '-', 'minYear' => date("Y")-2, 'maxYear' => date("Y"));
+			//If cancel or reset was pressed...
 			if(isset($controller->data['reset']) || isset($controller->data['cancel'])) {
+				//unset the filter
 				$this->filter = array();
+				//unset the url
 				$this->url = '/';
+				//unset the filter options
 				$this->filterOptions = array();
-				$controller->redirect('/' . $controller->name . '/index/');
+				//redirect to the current page with no filtering being done
+				$controller->redirect('/' . $controller->name . $controllerAction);
 			}
 		}
 	}
