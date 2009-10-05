@@ -113,7 +113,7 @@ class FilterComponent extends Object {
 				//unset the filter options
 				$this->filterOptions = array();
 				//redirect to the current page with no filtering being done
-				$controller->redirect('/' . $controller->name . $controllerAction);
+				$controller->redirect('/' . $controller->name . '/' . $controllerAction);
 			}
 		}
 	}
