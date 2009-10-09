@@ -180,11 +180,10 @@ class FilterComponent extends Object {
 				} elseif (isset($controller->{$controller->modelClass}->hasOne[$key])) {
 					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
 				}
-				}
 				// if columns exist
 				if(!empty($columns)) {
 					// loop through filter data
-					foreach($value as $field) {
+					foreach($value as $k => $v) {
 						// JF: deal with datetime filter
 						if(is_array($v) && $columns[$k] == 'datetime') {
 							$v = $this->_prepare_datetime($v);
@@ -211,49 +210,6 @@ class FilterComponent extends Object {
 							}
 							// save the filter data for the url
 							$this->url .= '/'. $key . '.' . $k . ':' . $v;
-						}
-					}
-				}
-				else{
-					if (isset($controller->{$controller->modelClass}->hasMany[$key])) {
-						$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
-					//checks to see if the model's hasOne is set
-					} elseif (isset($controller->{$controller->modelClass}->hasAndBelongsToMany[$key])) {
-						$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
-					}
-					// if columns exist
-					if(!empty($columns)) {
-						// loop through filter data
-						foreach($value as $k => $v) {
-							foreach($field as $k => $v){
-								// JF: deal with datetime filter
-								if(is_array($v) && $columns[$k] == 'datetime') {
-									$v = $this->_prepare_datetime($v);
-								}
-								// if filter value has been entered
-								if($v != '') {
-									// if filter is in whitelist
-									if(is_array($whiteList) && !in_array($k, $whiteList) ){
-										continue;
-									}
-									// check if there are some fieldFormatting set
-									if(isset($this->fieldFormatting[$columns[$k]])) {
-										// insert value into fieldFormatting
-										$tmp = sprintf($this->fieldFormatting[$columns[$k]], $v);
-										// don't put key.fieldname as array key if a LIKE clause
-										if (substr($tmp, 0, 4) == 'LIKE') {
-											$ret[] = $key . '.' . $k . " " . $tmp;
-										} else {
-											$ret[$key . '.' . $k] = $tmp;
-										}
-									} else {
-										// build up where clause with field and value
-										$ret[$key . '.' . $k] = $v;
-									}
-									// save the filter data for the url
-									$this->url .= '/'. $key . '.' . $k . ':' . $v;
-								}
-							}
 						}
 					}
 				}
