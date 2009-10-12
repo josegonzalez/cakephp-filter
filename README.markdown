@@ -74,7 +74,7 @@ To set it up to include time in the filter, add a line to the controller such as
 These different initialize options can be combined in the array.
 
 ## TODO:
-1. Better code commenting
+1. Better code commenting - Done, left to help enforce the habit
 2. Support Datetime - Mostly Done
 3. Support URL redirects and parsing - Mostly Done
 4. Refactor datetime filtering for ranges

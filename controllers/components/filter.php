@@ -236,28 +236,28 @@ class FilterComponent extends Object {
 										$tmp = sprintf($this->fieldFormatting[$columns[$k]], $v);
 										// don't put key.fieldname as array key if a LIKE clause
 										if (substr($tmp, 0, 4) == 'LIKE') {
-											$ret[] = array(
-												'table' => $key,
-												'type' => 'inner',
-												'conditions' => array($key . '.' . $k . " " . $tmp)
-											);
-											//$ret[] = $key . '.' . $k . " " . $tmp;
+//											$ret[] = array(
+//												'table' => $key,
+//												'type' => 'inner',
+//												'conditions' => array($key . '.' . $k . " " . $tmp)
+//											);
+											$ret[] = $key . '.' . $k . " " . $tmp;
 										} else {
-											$ret[] = array(
-												'table' => $key,
-												'type' => 'inner',
-												'conditions' => array($key . '.' . $k . " = " . $tmp)
-											);
-											//$ret[$key . '.' . $k] = $tmp;
+//											$ret[] = array(
+//												'table' => $key,
+//												'type' => 'inner',
+//												'conditions' => array($key . '.' . $k . " = " . $tmp)
+//											);
+											$ret[$key . '.' . $k] = $tmp;
 										}
 									} else {
 										// build up where clause with field and value
-										$ret[] = array(
-											'table' => $key,
-											'type' => 'inner',
-											'conditions' => array($key . '.' . $k . " = " . $v)
-										);
-										//$ret[$key . '.' . $k] = $v;
+//										$ret[] = array(
+//											'table' => $key,
+//											'type' => 'inner',
+//											'conditions' => array($key . '.' . $k . " = " . $v)
+//										);
+										$ret[$key . '.' . $k] = $v;
 									}
 									// save the filter data for the url
 									$this->url .= '/'. $key . '.' . $k . ':' . $v;
