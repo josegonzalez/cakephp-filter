@@ -1,6 +1,7 @@
 <?php
 class FilterBehavior extends ModelBehavior {
 	/**
+	 * Adapted from work by Brenton (http://bakery.cakephp.org/articles/view/habtm-searching)
 	 * New function to help with searching where conditions involve HABTM.
 	 * Nothing too fancy for now, just deals with first level (ex. no `with`), also, not sure how it'll
 	 * react for multiple fields.

@@ -7,7 +7,9 @@ That's a lot of forks...
 
 This also contains a view helper made by 'mcurry' (http://github.com/mcurry/cakephp-filter-component).
 
-Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but to each their own).
+This also uses a behavior adapted from work by 'Brenton' (http://bakery.cakephp.org/articles/view/habtm-searching) to allow for HasAndBelongsToMany and HasMany relationships.
+
+This works for all relationships.
 
 ## Installation
 - Clone from github : in your plugin directory type `git clone git://github.com/josegonzalez/filter-component.git filter`
@@ -59,6 +61,9 @@ If you don't want to filter a particular field pass null in that spot.
 		<?php echo $paginator->numbers($filter_options);?>
 		<?php echo $paginator->next(__('next', true).' >>', $filter_options, null, array('class' =>' disabled'));?>
 	</div>
+	
+4. Add Behavior to model (only necessary for HABTM and HasMany)
+	var $actsAs = 'Filter';
 
 At this point, everything should theoretically work.
 
