@@ -62,7 +62,7 @@ If you don't want to filter a particular field pass null in that spot.
 		<?php echo $paginator->next(__('next', true).' >>', $filter_options, null, array('class' =>' disabled'));?>
 	</div>
 	
-4. Add Behavior to model (only necessary for HABTM and HasMany)
+4. Add Behavior to model (only necessary for HABTM and HasMany):
 	var $actsAs = 'Filter';
 
 At this point, everything should theoretically work.
