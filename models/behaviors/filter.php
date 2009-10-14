@@ -14,13 +14,13 @@ class FilterBehavior extends ModelBehavior {
 	 *
 	 * @return array Modified queryData array
 	 */
-	function beforeFind(&$thisModel, $queryData) {
+	function beforeFind(&$model, $queryData) {
 		$ret_queryData = $queryData;
 		
 		// See if we've got conditions
 		if (sizeof($queryData['conditions']) > 0) {
 			
-			$associated = $thisModel->getAssociated();
+			$associated = $model->getAssociated();
 			
 			foreach ($queryData['conditions'] AS $key => $value) {
 				if(strpos($value, 'LIKE')){
@@ -33,14 +33,14 @@ class FilterBehavior extends ModelBehavior {
 				}
 				// Period indicates that not controller's own model
 				if (strpos($field, '.')) {
-					list($model, $column) = explode('.', $field);
+					list($associatedModel, $column) = explode('.', $field);
 					// See if it's an association
-					if (array_key_exists($model, $associated)) {
+					if (array_key_exists($associatedModel, $associated)) {
 						
 						// Do stuff based on association type, so far only HABTM
-						if ($associated[$model] == 'hasAndBelongsToMany') {
-							$assoc = $thisModel->hasAndBelongsToMany[$model]; 
-							$condition = $thisModel->{$model}->find('all',
+						if ($associated[$associatedModel] == 'hasAndBelongsToMany') {
+							$assoc = $model->hasAndBelongsToMany[$associatedModel]; 
+							$condition = $model->{$associatedModel}->find('all',
 																array(
 																	'fields' => 'DISTINCT id',
 																	'conditions' => $field . ' ' . $search_value,
@@ -62,14 +62,14 @@ class FilterBehavior extends ModelBehavior {
 									}
 								}
 							}
-							$result = $thisModel->{$model}->{$assoc['with']}->find('all',
+							$result = $model->{$associatedModel}->{$assoc['with']}->find('all',
 															array(
 																'fields' => 'DISTINCT '. $assoc['foreignKey'],
 																'conditions' => array('OR' => $conditions),
 																'recursive' => -1,
 																'callbacks' => false // because otherwise this `beforeFind` would be called again
 															));
-							$key_value = '{n}.'. $thisModel->{$model}->{$assoc['with']}->name .'.'. $assoc['foreignKey'];
+							$key_value = '{n}.'. $model->{$associatedModel}->{$assoc['with']}->name .'.'. $assoc['foreignKey'];
 							
 							$result = Set::combine($result, $key_value, $key_value);
 							
@@ -77,12 +77,12 @@ class FilterBehavior extends ModelBehavior {
 							// by the actually query itself, so would be nice to avoid an extra query.
 							$ids = array_keys($result);
 							// set it in our return array
-							$ret_queryData['conditions'][$thisModel->name .'.id'] = $ids;
+							$ret_queryData['conditions'][$model->name .'.id'] = $ids;
 							// and unset the old one, since different id field and such
 							unset($ret_queryData['conditions'][$key]);
-						} else if ($associated[$model] == 'hasMany') {
-							$assoc = $thisModel->hasMany[$model]; 
-							$condition = $thisModel->{$model}->find('all',
+						} else if ($associated[$associatedModel] == 'hasMany') {
+							$assoc = $model->hasMany[$associatedModel]; 
+							$condition = $model->{$associatedModel}->find('all',
 																array(
 																	'fields' => 'DISTINCT id',
 																	'conditions' => $field . ' ' . $search_value,
@@ -104,14 +104,14 @@ class FilterBehavior extends ModelBehavior {
 									}
 								}
 							}
-							$result = $thisModel->{$model}->find('all',
+							$result = $model->{$associatedModel}->find('all',
 																array(
 																	'fields' => 'DISTINCT ' . $assoc['foreignKey'],
 																	'conditions' => array('OR' => $conditions),
 																	'recursive' => -1,
 																	'callbacks' => false // because otherwise this `beforeFind` would be called again
 																));
-							$key_value = '{n}.'. $thisModel->{$model}->name .'.'. $assoc['foreignKey'];
+							$key_value = '{n}.'. $model->{$associatedModel}->name .'.'. $assoc['foreignKey'];
 
 							$result = Set::combine($result, $key_value, $key_value);
 
@@ -119,7 +119,7 @@ class FilterBehavior extends ModelBehavior {
 							// by the actually query itself, so would be nice to avoid an extra query.
 							$ids = array_keys($result);
 							// set it in our return array
-							$ret_queryData['conditions'][$thisModel->name .'.id'] = $ids;
+							$ret_queryData['conditions'][$model->name .'.id'] = $ids;
 							// and unset the old one, since different id field and such
 							unset($ret_queryData['conditions'][$key]);
 						}
