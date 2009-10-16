@@ -1,7 +1,7 @@
-Filter Paginated Indexes using the Filter Component Plugin
+Filter Paginated Indexes using the CakePHP Filter Plugin
 
 ## Background
-This component is a fork of Jose Gonzalez's Filter component(http://github.com/josegonzalez/cakephp-filter-component), which is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
+This plugin is a fork of Jose Gonzalez's Filter component(http://github.com/josegonzalez/cakephp-filter-component), which is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
 
 That's a lot of forks...
 
@@ -12,8 +12,8 @@ This also uses a behavior adapted from work by 'Brenton' (http://bakery.cakephp.
 This works for all relationships.
 
 ## Installation
-- Clone from github : in your plugin directory type `git clone git://github.com/josegonzalez/filter-component.git filter`
-- Add as a git submodule : in your plugin directory type `git submodule add git://github.com/josegonzalez/filter-component.git filter`
+- Clone from github : in your plugin directory type `git clone  git://github.com/JeffreyMarvin/cakephp-filter-plugin.git`
+- Add as a git submodule : in your plugin directory type `git submodule add git://github.com/JeffreyMarvin/cakephp-filter-plugin.git`
 - Download an archive from github and extract it in `/plugins/filter`
 
 ## Usage
