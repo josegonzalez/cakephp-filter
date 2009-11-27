@@ -1,17 +1,19 @@
-Filter Paginated Indexes using the Filter Component Plugin
+Filter Paginated Indexes using the CakePHP Filter Plugin
 
 ## Background
-This component is a fork of Jose Gonzalez's Filter component(http://github.com/josegonzalez/cakephp-filter-component), which is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
+This plugin is a fork of Jose Gonzalez's Filter component(http://github.com/josegonzalez/cakephp-filter-component), which is something of a fork of James Fairhurst's Filter Component (http://www.jamesfairhurst.co.uk/posts/view/cakephp_filter_component/), which is in turn a fork by Maciej Grajcarek (http://blog.uplevel.pl/index.php/2008/06/cakephp-12-filter-component/) which is ITSELF a fork from Nik Chankov's code at http://nik.chankov.net/2008/03/01/filtering-component-for-your-tables/ .
 
 That's a lot of forks...
 
 This also contains a view helper made by 'mcurry' (http://github.com/mcurry/cakephp-filter-component).
 
-Filters hasOne and belongsTo relationships (I prefer selects from dropdowns, but to each their own).
+This also uses a behavior adapted from work by 'Brenton' (http://bakery.cakephp.org/articles/view/habtm-searching) to allow for HasAndBelongsToMany and HasMany relationships.
+
+This works for all relationships.
 
 ## Installation
-- Clone from github : in your plugin directory type `git clone git://github.com/josegonzalez/filter-component.git filter`
-- Add as a git submodule : in your plugin directory type `git submodule add git://github.com/josegonzalez/filter-component.git filter`
+- Clone from github : in your plugin directory type `git clone  git://github.com/JeffreyMarvin/cakephp-filter-plugin.git`
+- Add as a git submodule : in your plugin directory type `git submodule add git://github.com/JeffreyMarvin/cakephp-filter-plugin.git`
 - Download an archive from github and extract it in `/plugins/filter`
 
 ## Usage
@@ -59,6 +61,9 @@ If you don't want to filter a particular field pass null in that spot.
 		<?php echo $paginator->numbers($filter_options);?>
 		<?php echo $paginator->next(__('next', true).' >>', $filter_options, null, array('class' =>' disabled'));?>
 	</div>
+	
+4. Add Behavior to model (only necessary for HABTM and HasMany):
+	var $actsAs = 'Filter';
 
 At this point, everything should theoretically work.
 
@@ -74,7 +79,8 @@ To set it up to include time in the filter, add a line to the controller such as
 These different initialize options can be combined in the array.
 
 ## TODO:
-1. Better code commenting
+<<<<<<< HEAD
+1. Better code commenting - Done, left to help enforce the habit
 2. Support Datetime - Mostly Done
 3. Support URL redirects and parsing - Mostly Done
 4. Refactor datetime filtering for ranges

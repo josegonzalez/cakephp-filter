@@ -60,7 +60,7 @@ class FilterComponent extends Object {
 
 	/**
 	 * Before any Controller action
-	 * @param array settings['actions']  the action the filter is to be applied to, 
+	 * @param array settings['actions'] an array of the action(s) the filter is to be applied to, 
 	 * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url,
 	 * @param array settings['useTime'] is whether to filter date times with date in addition to time
 	 */
@@ -173,17 +173,15 @@ class FilterComponent extends Object {
 				//check to see if the model is set
 				if(isset($controller->{$key})) {
 					$columns = $controller->{$key}->getColumnTypes();
-				//check to see if what the model belongsTo is set
-				} elseif (isset($controller->{$controller->modelClass}->belongsTo[$key])) {
-					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
-				//checks to see if the model's hasOne is set
-				} elseif (isset($controller->{$controller->modelClass}->hasOne[$key])) {
+				//check to see if what the model belongsTo or hasOne is set
+				} elseif (isset($controller->{$controller->modelClass}->belongsTo[$key]) || isset($controller->{$controller->modelClass}->hasOne[$key])) {
 					$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
 				}
 				// if columns exist
 				if(!empty($columns)) {
 					// loop through filter data
 					foreach($value as $k => $v) {
+						echo $key . ': ' . $k . ': ' . $v . '<br />';
 						// JF: deal with datetime filter
 						if(is_array($v) && $columns[$k] == 'datetime') {
 							$v = $this->_prepare_datetime($v);
@@ -212,17 +210,108 @@ class FilterComponent extends Object {
 							$this->url .= '/'. $key . '.' . $k . ':' . $v;
 						}
 					}
-					//unsetting the empty forms
-					if(count($value) == 0){
-						unset($controller->data[$key]);
-					}
-					//If redirect has been set true, and the data had not been parsed before and put into the url, does it now
-					if(!$this->parsed && $this->redirect){
-						$this->url = '/Filter.parsed:true' . $this->url;
-						$controller->redirect('/' . $controller->name . '/index' . $this->url . '/');
-					}
+				}
+				else{
+					//checks to see if the model's hasMany is set
+					if (isset($controller->{$controller->modelClass}->hasMany[$key])) {
+						$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
+						// if columns exist
+						if(!empty($columns)) {
+							// loop through filter data
+							foreach($value as $k => $v) {
+								echo $key . ': ' . $k . ': ' . $v . '<br />';
+								// JF: deal with datetime filter
+								if(is_array($v) && $columns[$k] == 'datetime') {
+									$v = $this->_prepare_datetime($v);
+								}
+								// if filter value has been entered
+								if($v != '') {
+									// if filter is in whitelist
+									if(is_array($whiteList) && !in_array($k, $whiteList) ){
+										continue;
+									}
+									// check if there are some fieldFormatting set
+									if(isset($this->fieldFormatting[$columns[$k]])) {
+										// insert value into fieldFormatting
+										$tmp = sprintf($this->fieldFormatting[$columns[$k]], $v);
+										// don't put key.fieldname as array key if a LIKE clause
+										if (substr($tmp, 0, 4) == 'LIKE') {
+//											$ret[] = array(
+//												'table' => $key,
+//												'type' => 'inner',
+//												'conditions' => array($key . '.' . $k . " " . $tmp)
+//											);
+											$ret[] = $key . '.' . $k . " " . $tmp;
+										} else {
+//											$ret[] = array(
+//												'table' => $key,
+//												'type' => 'inner',
+//												'conditions' => array($key . '.' . $k . " = " . $tmp)
+//											);
+											$ret[$key . '.' . $k] = $tmp;
+										}
+									} else {
+										// build up where clause with field and value
+//										$ret[] = array(
+//											'table' => $key,
+//											'type' => 'inner',
+//											'conditions' => array($key . '.' . $k . " = " . $v)
+//										);
+										$ret[$key . '.' . $k] = $v;
+									}
+									// save the filter data for the url
+									$this->url .= '/'. $key . '.' . $k . ':' . $v;
+								}
+							}
+						}
+					//checks to see if the model's HABTM is set
+					}	elseif (isset($controller->{$controller->modelClass}->hasAndBelongsToMany[$key])) {
+							$columns = $controller->{$controller->modelClass}->{$key}->getColumnTypes();
+							// if columns exist
+							if(!empty($columns)) {
+								// loop through filter data
+								foreach($value as $k => $v) {
+									// JF: deal with datetime filter
+									if(is_array($v) && $columns[$k] == 'datetime') {
+										$v = $this->_prepare_datetime($v);
+									}
+									// if filter value has been entered
+									if($v != '') {
+										// if filter is in whitelist
+										if(is_array($whiteList) && !in_array($k, $whiteList) ){
+											continue;
+										}
+										// check if there are some fieldFormatting set
+										if(isset($this->fieldFormatting[$columns[$k]])) {
+											// insert value into fieldFormatting
+											$tmp = sprintf($this->fieldFormatting[$columns[$k]], $v);
+											// don't put key.fieldname as array key if a LIKE clause
+											if (substr($tmp, 0, 4) == 'LIKE') {
+												$ret[] = $key . '.' . $k . " " . $tmp;
+											} else {
+												$ret[$key . '.' . $k] = $tmp;
+											}
+										} else {
+											// build up where clause with field and value
+											$ret[$key . '.' . $k] = $v;
+										}
+										// save the filter data for the url
+										$this->url .= '/'. $key . '.' . $k . ':' . $v;
+									}
+								}
+							}
+						}
+				}
+				//unsetting the empty forms
+				if(count($value) == 0){
+					unset($controller->data[$key]);
 				}
 			}
+		}
+		//If redirect has been set true, and the data had not been parsed before and put into the url, does it now
+		if(!$this->parsed && $this->redirect){
+			$this->url = '/Filter.parsed:true' . $this->url;
+			$controller->redirect('/' . $controller->name . '/index' . $this->url . '/');
 		}
 		return $ret;
 	}
