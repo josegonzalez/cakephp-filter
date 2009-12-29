@@ -8,7 +8,7 @@
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
  * @modified further by Jeffrey Marvin - http://blitztiger.com
  * @incoroporating changes made by 'mcurry' - http://github.com/mcurry/
- * @version 0.5
+ * @version 0.6
  * @author Jeffrey Marvin <support@blitztiger.com>
  * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
  * @package	app
@@ -63,58 +63,55 @@ class FilterComponent extends Object {
 	var $filter = array();
 	var $formOptionsDatetime = array();
 	var $filterOptions = array();
-
+	var $separator = "/";
+	var $actions = array('index');
 /**
  * Before any Controller action
  * 
  * @param array settings['actions'] an array of the action(s) the filter is to be applied to, 
  * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url,
  * @param array settings['useTime'] is whether to filter date times with date in addition to time
+ * @param array settings['separator'] is the separator to use between fields in a date input
  */
 	function initialize(&$controller, $settings = array()) {
-		// If no action(s) is/are specified, defaults to 'index'
-		if (!isset($settings['actions']) || empty($settings['actions'])) {
-			$actions = array('index');
-		} else {
-			$actions = $settings['actions'];
+		if (isset($settings['actions']) && !empty($settings['actions'])) {
+			$this->actions = $settings['actions'];
 		}
 
-		if (!isset($settings['redirect']) || empty($settings['redirect'])) {
-			$this->redirect = false;
-		} else {
+		if (isset($settings['redirect']) && !empty($settings['redirect'])) {
 			$this->redirect = $settings['redirect'];
 		}
 
-		if (!isset($settings['useTime']) || empty($settings['useTime'])) {
-			$this->useTime = false;
-		} else {
+		if (isset($settings['separator']) && !empty($settings['separator'])) {
+			$this->separator = $settings['separator'];
+		}
+
+		if (isset($settings['useTime']) && !empty($settings['useTime'])) {
 			$this->useTime = $settings['useTime'];
 		}
 
-		foreach ($actions as $action){
-			$this->processAction($controller, $action);
+		if (in_array($controller->action, $this->actions)){
+			$this->processAction($controller);
 		}
 	}
 	
-	function processAction($controller, $controllerAction){
-		if ($controller->action == $controllerAction) {
-			$this->filter = $this->processFilters($controller);
-			$url = (empty($this->url)) ? '/' : $this->url;
+	function processAction(&$controller){
+		$this->filter = $this->processFilters($controller);
+		$url = (empty($this->url)) ? '/' : $this->url;
 
-			$this->filterOptions = array('url' => array($url));
-			$this->formOptionsDatetime = array(
-				'dateFormat' => 'DMY',
-				'empty' => '-',
-				'maxYear' => date("Y"),
-				'minYear' => date("Y")-2,
-				'type' => 'date');
+		$this->filterOptions = array('url' => array($url));
+		$this->formOptionsDatetime = array(
+			'dateFormat' => 'DMY',
+			'empty' => '-',
+			'maxYear' => date("Y"),
+			'minYear' => date("Y")-2,
+			'type' => 'date');
 
-			if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
-				$this->filter = array();
-				$this->url = '/';
-				$this->filterOptions = array();
-				$controller->redirect("/{$controller->name}/{$controllerAction}");
-			}
+		if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
+			$this->filter = array();
+			$this->url = '/';
+			$this->filterOptions = array();
+			$controller->redirect("/{$controller->name}/{$controller->action}");
 		}
 	}
 
@@ -147,7 +144,7 @@ class FilterComponent extends Object {
  * @param array $whiteList contains list of allowed filter attributes
  * @access public
  */
-	function processFilters($controller, $whiteList = null){
+	function processFilters(&$controller, $whiteList = null){
 		$controller = $this->_prepareFilter($controller);
 		$ret = array();
 
@@ -161,14 +158,28 @@ class FilterComponent extends Object {
 				}
 				if (!empty($modelFieldNames)) {
 					foreach ($fields as $filteredFieldName => $filteredFieldData) {
-						if (is_array($filteredFieldData) && $modelFieldNames[$filteredFieldName] == 'datetime') {
-							$filteredFieldData = $this->_prepareDatetime($filteredFieldData);
+						if (is_array($filteredFieldData)) {
+							if (!isset($modelFieldNames[$filteredFieldName])) {
+								if ($this->_arrayHasKeys($filteredFieldData, array('year', 'month', 'day'))) {
+									$filteredFieldData = "{$filteredFieldData['month']}{$this->separator}{$filteredFieldData['day']}{$this->separator}{$filteredFieldData['year']}";
+								}
+							} else if ($modelFieldNames[$filteredFieldName] == 'datetime') {
+								$filteredFieldData = $this->_prepareDatetime($filteredFieldData);
+							}
 						}
 						if ($filteredFieldData != '') {
 							if (is_array($whiteList) && !in_array($filteredFieldName, $whiteList) ){
 								continue;
 							}
-							if (isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
+							if (substr($filteredFieldName, 0, 5) == 'FROM_') {
+								$filteredFieldName = substr($filteredFieldName, 5);
+								$pieces = explode($this->separator, $filteredFieldData);
+								$ret["{$model}.{$filteredFieldName} >="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+							} else if (substr($filteredFieldName, 0, 3) == 'TO_') {
+								$filteredFieldName = substr($filteredFieldName, 3);
+								$pieces = explode($this->separator, $filteredFieldData);
+								$ret["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+							} else if (isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 								// insert value into fieldFormatting
 								$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 								// don't put key.fieldname as array key if a LIKE clause
@@ -265,7 +276,7 @@ class FilterComponent extends Object {
  * 
  * @param object $controller the class of the controller which call this component
  */
-	function _prepareFilter($controller) {
+	function _prepareFilter(&$controller) {
 		$filter = array();
 		if (isset($controller->data)) {
 			foreach ($controller->data as $model => $fields) {
@@ -298,7 +309,7 @@ class FilterComponent extends Object {
  * 
  * @param object $controller the class of the controller which call this component
  */
-	function _checkParams($controller) {
+	function _checkParams(&$controller) {
 		if (empty($controller->params['named'])) {
 			$filter = array();
 		}
@@ -343,6 +354,27 @@ class FilterComponent extends Object {
 		} else {
 			return "{$date['year']}-{$date['month']}-{$date['day']}";
 		}
+	}
+
+/**
+ * Checks if all keys are held within an array
+ *
+ * @param array $array
+ * @param array $keys
+ * @param boolean $size
+ * @return boolean array has keys, optional check on size of array
+ * @author savant
+ **/
+	function _arrayHasKeys($array, $keys, $size = null) {
+		if (count($array) != count($keys)) return false;
+
+		$array = array_keys($array);
+		foreach ($keys as &$key) {
+			if (!in_array($key, $array)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 ?>
