@@ -52,7 +52,7 @@ class FilterComponent extends Object {
  * @var boolean
  */
 	var $redirect = false;
-	
+
 /**
  * Used to tell whether time should be used in the filtering
  * @var boolean
@@ -149,9 +149,7 @@ class FilterComponent extends Object {
  * @param string $fieldname
  * @return null|string
  */
-	function processDatetime($fieldname) {
-		$datetime = null;
-
+	function processDatetime($fieldname, $datetime = null) {
 		if (isset($this->params['named'][$fieldname])) {
 			$exploded = explode('-', $this->params['named'][$fieldname]);
 			if (!empty($exploded)) {
