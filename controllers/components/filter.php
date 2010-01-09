@@ -179,7 +179,7 @@ class FilterComponent extends Object {
 								$filteredFieldName = substr($filteredFieldName, 3);
 								$pieces = explode($this->separator, $filteredFieldData);
 								$ret["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
-							} else if (isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
+							} else if (isset($modelFieldNames[$filteredFieldName]) and isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 								// insert value into fieldFormatting
 								$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 								// don't put key.fieldname as array key if a LIKE clause
@@ -188,7 +188,7 @@ class FilterComponent extends Object {
 								} else {
 									$ret["{$model}.{$filteredFieldName}"] = $tmp;
 								}
-							} else {
+							} else if (isset($modelFieldNames[$filteredFieldName])) {
 								// build up where clause with field and value
 								$ret["{$model}.{$filteredFieldName}"] = $filteredFieldData;
 							}
@@ -209,7 +209,7 @@ class FilterComponent extends Object {
 										continue;
 									}
 									// check if there are some fieldFormatting set
-									if (isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
+									if (isset($modelFieldNames[$filteredFieldName]) and isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 										// insert value into fieldFormatting
 										$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 										// don't put key.fieldname as array key if a LIKE clause
@@ -218,7 +218,7 @@ class FilterComponent extends Object {
 										} else {
 											$ret["{$model}.{$filteredFieldName}"] = $tmp;
 										}
-									} else {
+									} else if (isset($modelFieldNames[$filteredFieldName])) {
 										$ret["{$model}.{$filteredFieldName}"] = $filteredFieldData;
 									}
 									$this->url .= "/{$model}.{$filteredFieldName}:{$filteredFieldData}";
@@ -238,7 +238,7 @@ class FilterComponent extends Object {
 											continue;
 										}
 										// check if there are some fieldFormatting set
-										if (isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
+										if (isset($modelFieldNames[$filteredFieldName]) and isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 											// insert value into fieldFormatting
 											$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 											// don't put key.fieldname as array key if a LIKE clause
@@ -247,7 +247,7 @@ class FilterComponent extends Object {
 											} else {
 												$ret["{$model}.{$filteredFieldName}"] = $tmp;
 											}
-										} else {
+										} else if (isset($modelFieldNames[$filteredFieldName])) {
 											$ret["{$model}.{$filteredFieldName}"] = $filteredFieldData;
 										}
 										$this->url .= "/{$model}.{$filteredFieldName}:{$filteredFieldData}";
