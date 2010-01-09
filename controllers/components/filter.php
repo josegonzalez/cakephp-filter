@@ -172,7 +172,6 @@ class FilterComponent extends Object {
  */
 	function processFilters(&$controller, $whitelist = null){
 		$controller = $this->_prepareFilter($controller);
-		$ret = array();
 
 		if (isset($controller->data)) {
 			foreach ($controller->data as $model => $fields) {
@@ -184,21 +183,21 @@ class FilterComponent extends Object {
 				}
 				if (!empty($modelFieldNames)) {
 					foreach ($fields as $filteredFieldName => $filteredFieldData) {
-						$ret = $this->_filterField($model, $ret, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
+						$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
 					}
 				} else {
 					if (isset($controller->{$controller->modelClass}->hasMany[$model])) {
 						$modelFieldNames = $controller->{$controller->modelClass}->{$model}->getColumnTypes();
 						if (!empty($modelFieldNames)) {
 							foreach ($fields as $filteredFieldName => $filteredFieldData) {
-								$ret = $this->_filterField($model, $ret, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
+								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
 							}
 						}
 					} else if (isset($controller->{$controller->modelClass}->hasAndBelongsToMany[$model])) {
 						$modelFieldNames = $controller->{$controller->modelClass}->{$model}->getColumnTypes();
 						if (!empty($modelFieldNames)) {
 							foreach ($fields as $filteredFieldName => $filteredFieldData) {
-								$ret = $this->_filterField($model, $ret, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
+								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
 							}
 						}
 					}
@@ -214,7 +213,6 @@ class FilterComponent extends Object {
 			$this->url = "/Filter.parsed:true{$this->url}";
 			$controller->redirect("/{$controller->name}/index{$this->url}/");
 		}
-		$this->filter = $ret;
 	}
 
 /**
@@ -223,7 +221,7 @@ class FilterComponent extends Object {
  * @return array
  * @author savant
  **/
-	function _filterField(&$model, &$ret, $filteredFieldName, $filteredFieldData, $modelFieldNames = array(), $whitelist = null) {
+	function _filterField(&$model, $filteredFieldName, $filteredFieldData, $modelFieldNames = array(), $whitelist = null) {
 		if (is_array($filteredFieldData)) {
 			if (!isset($modelFieldNames[$filteredFieldName])) {
 				if ($this->_arrayHasKeys($filteredFieldData, array('year', 'month', 'day'))) {
@@ -240,26 +238,25 @@ class FilterComponent extends Object {
 			if (substr($filteredFieldName, 0, 5) == 'FROM_') {
 				$filteredFieldName = substr($filteredFieldName, 5);
 				$pieces = explode($this->separator, $filteredFieldData);
-				$ret["{$model}.{$filteredFieldName} >="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+				$this->filter["{$model}.{$filteredFieldName} >="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
 			} else if (substr($filteredFieldName, 0, 3) == 'TO_') {
 				$filteredFieldName = substr($filteredFieldName, 3);
 				$pieces = explode($this->separator, $filteredFieldData);
-				$ret["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+				$this->filter["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
 			} else if (isset($modelFieldNames[$filteredFieldName]) and isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 				// insert value into fieldFormatting
 				$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 				// don't put key.fieldname as array key if a LIKE clause
 				if (substr($tmp, 0, 4) == 'LIKE') {
-					$ret[] = "{$model}.{$filteredFieldName} {$tmp}";
+					$this->filter[] = "{$model}.{$filteredFieldName} {$tmp}";
 				} else {
-					$ret["{$model}.{$filteredFieldName}"] = $tmp;
+					$this->filter["{$model}.{$filteredFieldName}"] = $tmp;
 				}
 			} else if (isset($modelFieldNames[$filteredFieldName])) {
-				$ret["{$model}.{$filteredFieldName}"] = $filteredFieldData;
+				$this->filter["{$model}.{$filteredFieldName}"] = $filteredFieldData;
 			}
 			$this->url .= "/{$model}.{$filteredFieldName}:{$filteredFieldData}";
 		}
-		return $ret;
 	}
 
 /**
