@@ -131,7 +131,7 @@ class FilterComponent extends Object {
 			$controller->redirect("/{$controller->name}/{$controller->action}");
 			return;
 		}
-		$this->filter = $this->processFilters($controller);
+		$this->processFilters($controller);
 		$url = (empty($this->url)) ? '/' : $this->url;
 
 		$this->filterOptions = array('url' => array($url));
@@ -214,7 +214,7 @@ class FilterComponent extends Object {
 			$this->url = "/Filter.parsed:true{$this->url}";
 			$controller->redirect("/{$controller->name}/index{$this->url}/");
 		}
-		return $ret;
+		$this->filter = $ret;
 	}
 
 /**
