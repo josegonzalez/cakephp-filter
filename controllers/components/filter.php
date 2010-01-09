@@ -106,23 +106,23 @@ class FilterComponent extends Object {
 			$this->actions = $settings['actions'];
 		}
 
-		if (isset($settings['redirect']) && !empty($settings['redirect'])) {
-			$this->redirect = $settings['redirect'];
-		}
-
-		if (isset($settings['separator']) && !empty($settings['separator'])) {
-			$this->separator = $settings['separator'];
-		}
-
-		if (isset($settings['useTime']) && !empty($settings['useTime'])) {
-			$this->useTime = $settings['useTime'];
-		}
-
 		if (in_array($controller->action, $this->actions)){
+			if (isset($settings['redirect']) && !empty($settings['redirect'])) {
+				$this->redirect = $settings['redirect'];
+			}
+
+			if (isset($settings['separator']) && !empty($settings['separator'])) {
+				$this->separator = $settings['separator'];
+			}
+
+			if (isset($settings['useTime']) && !empty($settings['useTime'])) {
+				$this->useTime = $settings['useTime'];
+			}
+
 			$this->processAction($controller);
 		}
 	}
-	
+
 	function processAction(&$controller){
 		$this->filter = $this->processFilters($controller);
 		$url = (empty($this->url)) ? '/' : $this->url;
