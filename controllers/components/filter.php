@@ -93,6 +93,14 @@ class FilterComponent extends Object {
  * @var string
  */
 	var $actions = array('index');
+
+/**
+ * Array of fields and models for which this component may filter
+ *
+ * @var string
+ **/
+	var $whitelist = array();
+
 /**
  * Before any Controller action
  * 
@@ -117,6 +125,10 @@ class FilterComponent extends Object {
 
 			if (isset($settings['useTime']) && !empty($settings['useTime'])) {
 				$this->useTime = $settings['useTime'];
+			}
+
+			if (isset($settings['whitelist']) && !empty($settings['whitelist'])) {
+				$this->whitelist = $settings['whitelist'];
 			}
 
 			$this->processAction($controller);
@@ -167,10 +179,9 @@ class FilterComponent extends Object {
  * Function which will change controller->data array
  * 
  * @param object $controller the class of the controller which call this component
- * @param array $whitelist contains list of allowed filter attributes
  * @access public
  */
-	function processFilters(&$controller, $whitelist = null){
+	function processFilters(&$controller){
 		$controller = $this->_prepareFilter($controller);
 
 		if (isset($controller->data)) {
@@ -183,21 +194,21 @@ class FilterComponent extends Object {
 				}
 				if (!empty($modelFieldNames)) {
 					foreach ($fields as $filteredFieldName => $filteredFieldData) {
-						$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
+						$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
 					}
 				} else {
 					if (isset($controller->{$controller->modelClass}->hasMany[$model])) {
 						$modelFieldNames = $controller->{$controller->modelClass}->{$model}->getColumnTypes();
 						if (!empty($modelFieldNames)) {
 							foreach ($fields as $filteredFieldName => $filteredFieldData) {
-								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
+								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
 							}
 						}
 					} else if (isset($controller->{$controller->modelClass}->hasAndBelongsToMany[$model])) {
 						$modelFieldNames = $controller->{$controller->modelClass}->{$model}->getColumnTypes();
 						if (!empty($modelFieldNames)) {
 							foreach ($fields as $filteredFieldName => $filteredFieldData) {
-								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames, $whitelist);
+								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
 							}
 						}
 					}
@@ -221,7 +232,7 @@ class FilterComponent extends Object {
  * @return array
  * @author savant
  **/
-	function _filterField(&$model, $filteredFieldName, $filteredFieldData, $modelFieldNames = array(), $whitelist = null) {
+	function _filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames = array()) {
 		if (is_array($filteredFieldData)) {
 			if (!isset($modelFieldNames[$filteredFieldName])) {
 				if ($this->_arrayHasKeys($filteredFieldData, array('year', 'month', 'day'))) {
@@ -232,8 +243,8 @@ class FilterComponent extends Object {
 			}
 		}
 		if ($filteredFieldData != '') {
-			if (is_array($whitelist) && !in_array($filteredFieldName, $whitelist) ){
-				continue;
+			if (isset($this->whitelist[$model]) && is_array($this->whitelist[$model]) && !in_array('*', $this->whitelist[$model]) && !in_array($filteredFieldName, $this->whitelist[$model])){
+				return;
 			}
 			if (substr($filteredFieldName, 0, 5) == 'FROM_') {
 				$filteredFieldName = substr($filteredFieldName, 5);
@@ -243,7 +254,7 @@ class FilterComponent extends Object {
 				$filteredFieldName = substr($filteredFieldName, 3);
 				$pieces = explode($this->separator, $filteredFieldData);
 				$this->filter["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
-			} else if (isset($modelFieldNames[$filteredFieldName]) and isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
+			} else if (isset($modelFieldNames[$filteredFieldName]) && isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 				// insert value into fieldFormatting
 				$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 				// don't put key.fieldname as array key if a LIKE clause
