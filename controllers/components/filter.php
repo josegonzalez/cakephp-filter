@@ -124,6 +124,13 @@ class FilterComponent extends Object {
 	}
 
 	function processAction(&$controller){
+		if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
+			$this->filter = array();
+			$this->url = '/';
+			$this->filterOptions = array();
+			$controller->redirect("/{$controller->name}/{$controller->action}");
+			return;
+		}
 		$this->filter = $this->processFilters($controller);
 		$url = (empty($this->url)) ? '/' : $this->url;
 
@@ -134,13 +141,6 @@ class FilterComponent extends Object {
 			'maxYear' => date("Y"),
 			'minYear' => date("Y")-2,
 			'type' => 'date');
-
-		if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
-			$this->filter = array();
-			$this->url = '/';
-			$this->filterOptions = array();
-			$controller->redirect("/{$controller->name}/{$controller->action}");
-		}
 	}
 
 /**
