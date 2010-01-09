@@ -24,19 +24,18 @@ This works for all relationships.
 - Download an archive from github and extract it in `/plugins/filter`
 
 ## Usage
-1. Include the component in your controller (AppController or otherwise)
+- Include the component in your controller (AppController or otherwise)
 
 	`var $components = array('Filter.Filter');`
 
-2. Use something like the following in your index
+- Use something like the following in your index
 <pre><code>function index() {
 	$filterOptions = $this->Filter->filterOptions;
 	$posts = $this->paginate(null, $this->Filter->filter);
 	$this->set(compact('filterOptions', 'posts'));
 }</pre></code>
-
-3. Setup your view correctly:
- -Option 1: Helper
+- Setup your view correctly:
+  - Option 1: Helper
 	Use the helper In between the row with all the column headers and the first row of data add: 
 
 	`<?php echo $filter->form('Post', array('name')) ?>`
@@ -44,7 +43,10 @@ This works for all relationships.
 	The first parameter is the model name. 
 	The second parameter is an array of fields. 
 	If you don't want to filter a particular field pass null in that spot.
- -Option 2: Manually
+
+  - Option 2: Manually
+	Note that in CakePHP 1.3, you no longer have to pass parameters to the PaginatorHelper, so some of this only applies to 1.2
+
 		<?php echo $form->create('Post', array('action' => 'index', 'id' => 'filters')); ?>
 		<table cellpadding="0" cellspacing="0">
 			<thead>
@@ -70,7 +72,7 @@ This works for all relationships.
 			<?php echo $paginator->numbers($filter_options);?>
 			<?php echo $paginator->next(__('next', true).' >>', $filter_options, null, array('class' =>' disabled'));?>
 		</div>
-4. Add Behavior to model (only necessary for HABTM and HasMany):
+- Add Behavior to model (only necessary for HABTM and HasMany):
 
 	`var $actsAs = 'Filter';`
 
@@ -94,8 +96,8 @@ These different initialization options can be combined in the setup array.
 
 ## Todo
 1. Better code commenting - Done, left to help enforce the habit
-2. -Support Datetime- Done
-3. -Support URL redirects and parsing- Done
+2. <del>Support Datetime</del> Done
+3. <del>Support URL redirects and parsing</del> Done
 4. Refactor datetime filtering for ranges - Mostly Done
-5. -Allow the action to be configurable-
-6. -Support jQuery Datepicker- Outside scope
+5. <del>Allow the action to be configurable</del> Done
+6. <del>Support jQuery Datepicker</del> Outside scope
