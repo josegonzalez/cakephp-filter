@@ -59,11 +59,39 @@ class FilterComponent extends Object {
  */
 	var $useTime = false;
 
-// class variables
+/**
+ * Filtered Data array for Pagination
+ *
+ * @var string
+ */
 	var $filter = array();
+
+/**
+ * Formatting for datetime fields
+ *
+ * @var array
+ */
 	var $formOptionsDatetime = array();
+
+/**
+ * Contains persisting filter options for PaginatorHelper. Used in CakePHP 1.2
+ *
+ * @var array
+ */
 	var $filterOptions = array();
+
+/**
+ * Separator to use between fields in a date input
+ *
+ * @var string
+ */
 	var $separator = "/";
+
+/**
+ * Actions upon which this component will act upon
+ *
+ * @var string
+ */
 	var $actions = array('index');
 /**
  * Before any Controller action
