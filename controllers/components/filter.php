@@ -7,7 +7,7 @@
  * @modified again by James Fairhurst - http://www.jamesfairhurst.co.uk
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
  * @modified further by Jeffrey Marvin - http://blitztiger.com
- * @incoroporating changes made by 'mcurry' - http://github.com/mcurry/
+ * @incorporating changes made by Matt Curry - http://github.com/mcurry/
  * @version 0.7
  * @author Jeffrey Marvin <support@blitztiger.com>
  * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
