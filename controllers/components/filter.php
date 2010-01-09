@@ -243,7 +243,7 @@ class FilterComponent extends Object {
 			}
 		}
 		if ($filteredFieldData != '') {
-			if (isset($this->whitelist[$model]) && is_array($this->whitelist[$model]) && !in_array('*', $this->whitelist[$model]) && !in_array($filteredFieldName, $this->whitelist[$model])){
+			if ((isset($this->whitelist[$model]) && is_array($this->whitelist[$model]) && !in_array('*', $this->whitelist[$model]) && !in_array($filteredFieldName, $this->whitelist[$model])) || (!isset($this->whitelist[$model]) && !empty($this->whitelist))){
 				return;
 			}
 			if (substr($filteredFieldName, 0, 5) == 'FROM_') {
