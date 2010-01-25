@@ -39,7 +39,7 @@ class FilterComponent extends Object {
  * Url variable used in paginate helper (array('url'=>$url));
  * @var string
  */
-	 var $url = '';
+	 var $url = array();
 
 /**
  * Used to tell whether the data options have been parsed
