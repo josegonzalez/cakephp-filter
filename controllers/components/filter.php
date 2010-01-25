@@ -8,7 +8,7 @@
  * @modified yet again by Jose Diaz-Gonzalez - http://josediazgonzalez.com
  * @modified further by Jeffrey Marvin - http://blitztiger.com
  * @incorporating changes made by Matt Curry - http://github.com/mcurry/
- * @version 0.7
+ * @version 0.8
  * @author Jeffrey Marvin <support@blitztiger.com>
  * @license	http://www.opensource.org/licenses/mit-license.php The MIT License
  * @package	app
@@ -60,25 +60,11 @@ class FilterComponent extends Object {
 	var $useTime = false;
 
 /**
- * Filtered Data array for Pagination
- *
- * @var string
- */
-	var $filter = array();
-
-/**
  * Formatting for datetime fields
  *
  * @var array
  */
 	var $formOptionsDatetime = array();
-
-/**
- * Contains persisting filter options for PaginatorHelper. Used in CakePHP 1.2
- *
- * @var array
- */
-	var $filterOptions = array();
 
 /**
  * Separator to use between fields in a date input
@@ -101,6 +87,7 @@ class FilterComponent extends Object {
  **/
 	var $whitelist = array();
 
+	var $paginate = array('conditions' => array());
 /**
  * Before any Controller action
  * 
@@ -137,16 +124,18 @@ class FilterComponent extends Object {
 
 	function processAction(&$controller){
 		if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
-			$this->filter = array();
+			$this->paginate = array();
 			$this->url = '/';
-			$this->filterOptions = array();
+			$controller->viewVars['filterOptions'] = array();
 			$controller->redirect("/{$controller->name}/{$controller->action}");
 			return;
 		}
 		$this->processFilters($controller);
-		$url = (empty($this->url)) ? '/' : $this->url;
 
-		$this->filterOptions = array('url' => array($url));
+		foreach ($this->url as $key => $value) {
+			$controller->params['named'][$key] = $value;
+		}
+
 		$this->formOptionsDatetime = array(
 			'dateFormat' => 'DMY',
 			'empty' => '-',
@@ -249,24 +238,24 @@ class FilterComponent extends Object {
 			if (substr($filteredFieldName, 0, 5) == 'FROM_') {
 				$filteredFieldName = substr($filteredFieldName, 5);
 				$pieces = explode($this->separator, $filteredFieldData);
-				$this->filter["{$model}.{$filteredFieldName} >="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+				$this->paginate['conditions']["{$model}.{$filteredFieldName} >="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
 			} else if (substr($filteredFieldName, 0, 3) == 'TO_') {
 				$filteredFieldName = substr($filteredFieldName, 3);
 				$pieces = explode($this->separator, $filteredFieldData);
-				$this->filter["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+				$this->paginate['conditions']["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
 			} else if (isset($modelFieldNames[$filteredFieldName]) && isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 				// insert value into fieldFormatting
 				$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
 				// don't put key.fieldname as array key if a LIKE clause
 				if (substr($tmp, 0, 4) == 'LIKE') {
-					$this->filter[] = "{$model}.{$filteredFieldName} {$tmp}";
+					$this->paginate['conditions']["{$model}.{$filteredFieldName} LIKE"] = "%{$filteredFieldData}%";
 				} else {
-					$this->filter["{$model}.{$filteredFieldName}"] = $tmp;
+					$this->paginate['conditions']["{$model}.{$filteredFieldName}"] = $tmp;
 				}
 			} else if (isset($modelFieldNames[$filteredFieldName])) {
-				$this->filter["{$model}.{$filteredFieldName}"] = $filteredFieldData;
+				$this->paginate['conditions']["{$model}.{$filteredFieldName}"] = $filteredFieldData;
 			}
-			$this->url .= "/{$model}.{$filteredFieldName}:{$filteredFieldData}";
+			$this->url["{$model}.{$filteredFieldName}"] = $filteredFieldData;
 		}
 	}
 
