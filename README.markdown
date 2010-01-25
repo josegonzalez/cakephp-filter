@@ -30,9 +30,9 @@ This works for all relationships.
 
 - Use something like the following in your index
 <pre><code>function index() {
-	$filterOptions = $this->Filter->filterOptions;
-	$posts = $this->paginate(null, $this->Filter->filter);
-	$this->set(compact('filterOptions', 'posts'));
+	$this->paginate = array_merge_recursive($this->paginate, $this->Filter->paginate);
+	$posts = $this->paginate();
+	$this->set(compact('posts'));
 }</pre></code>
 - Setup your view correctly:
   - Option 1: Helper
@@ -45,7 +45,6 @@ This works for all relationships.
 	If you don't want to filter a particular field pass null in that spot.
 
   - Option 2: Manually
-	Note that in CakePHP 1.3, you no longer have to pass parameters to the PaginatorHelper, so some of this only applies to 1.2
 
 		<?php echo $form->create('Post', array('action' => 'index', 'id' => 'filters')); ?>
 		<table cellpadding="0" cellspacing="0">
@@ -68,9 +67,9 @@ This works for all relationships.
 		</table>
 		<?php echo $form->end(); ?>
 		<div class="paging">
-			<?php echo $paginator->prev('<< '.__('previous', true), $filter_options, null, array('class' => 'disabled'));?>
+			<?php echo $paginator->prev('<< '.__('previous', true), array(), null, array('class' => 'disabled'));?>
 			<?php echo $paginator->numbers($filter_options);?>
-			<?php echo $paginator->next(__('next', true).' >>', $filter_options, null, array('class' =>' disabled'));?>
+			<?php echo $paginator->next(__('next', true).' >>', array(), null, array('class' =>' disabled'));?>
 		</div>
 - Add Behavior to model (only necessary for HABTM and HasMany):
 
