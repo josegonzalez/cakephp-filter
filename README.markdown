@@ -15,11 +15,11 @@ This works for all relationships.
 ## Installation
 - Clone from github : in your plugin directory type
 
-	`git clone  git://github.com/JeffreyMarvin/cakephp-filter-plugin.git`
+	`git clone  git://github.com/josegonzalez/cakephp-filter-plugin.git`
 
 - Add as a git submodule : in your plugin directory type
 
-	`git submodule add git://github.com/JeffreyMarvin/cakephp-filter-plugin.git`
+	`git submodule add git://github.com/josegonzalez/cakephp-filter-plugin.git`
 
 - Download an archive from github and extract it in `/plugins/filter`
 
