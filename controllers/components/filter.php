@@ -74,6 +74,13 @@ class FilterComponent extends Object {
 	var $separator = "/";
 
 /**
+ * Separator to use between dates in a date range
+ *
+ * @var string
+ */
+	var $rangeSeparator = "-";
+
+/**
  * Actions upon which this component will act upon
  *
  * @var string
@@ -95,6 +102,7 @@ class FilterComponent extends Object {
  * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url,
  * @param array settings['useTime'] is whether to filter date times with date in addition to time
  * @param array settings['separator'] is the separator to use between fields in a date input
+ * @param array settings['rangeSeparator'] is the separator to use between dates in a date range input
  */
 	function initialize(&$controller, $settings = array()) {
 		if (isset($settings['actions']) && !empty($settings['actions'])) {
@@ -108,6 +116,10 @@ class FilterComponent extends Object {
 
 			if (isset($settings['separator']) && !empty($settings['separator'])) {
 				$this->separator = $settings['separator'];
+			}
+
+			if (isset($settings['rangeSeparator']) && !empty($settings['rangeSeparator'])) {
+				$this->rangeSeparator = $settings['rangeSeparator'];
 			}
 
 			if (isset($settings['useTime']) && !empty($settings['useTime'])) {
@@ -243,6 +255,17 @@ class FilterComponent extends Object {
 				$filteredFieldName = substr($filteredFieldName, 3);
 				$pieces = explode($this->separator, $filteredFieldData);
 				$this->paginate['conditions']["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+			} else if (substr($filteredFieldName, 0, 6) == 'RANGE_') {
+				$filteredFieldName = substr($filteredFieldName, 6);
+				$pieces = explode($this->rangeSeparator, $filteredFieldData);
+				$startDate = date('Y/m/d', strtotime($pieces[0]));
+				if(count($pieces) == 1) {
+					$this->paginate['conditions']["{$model}.{$filteredFieldName}"] = $startDate;
+				} else {
+					$this->paginate['conditions']["{$model}.{$filteredFieldName} >="] = $startDate;
+					$endDate = date('Y/m/d', strtotime($pieces[1]));
+					$this->paginate['conditions']["{$model}.{$filteredFieldName} <="] = $endDate;
+				}
 			} else if (isset($modelFieldNames[$filteredFieldName]) && isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 				// insert value into fieldFormatting
 				$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
