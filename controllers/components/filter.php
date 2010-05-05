@@ -88,6 +88,13 @@ class FilterComponent extends Object {
 	var $actions = array('index');
 
 /**
+ * Default filter values
+ *
+ * @var array
+ */
+	var $defaults = array();
+
+/**
  * Array of fields and models for which this component may filter
  *
  * @var string
@@ -103,6 +110,7 @@ class FilterComponent extends Object {
  * @param array settings['useTime'] is whether to filter date times with date in addition to time
  * @param array settings['separator'] is the separator to use between fields in a date input
  * @param array settings['rangeSeparator'] is the separator to use between dates in a date range input
+ * @param array settings['defaults'] is an array of default field values to be filtered on
  */
 	function initialize(&$controller, $settings = array()) {
 		if (isset($settings['actions']) && !empty($settings['actions'])) {
@@ -124,6 +132,10 @@ class FilterComponent extends Object {
 
 			if (isset($settings['useTime']) && !empty($settings['useTime'])) {
 				$this->useTime = $settings['useTime'];
+			}
+
+			if (isset($settings['defaults']) && !empty($settings['defaults'])) {
+				$this->defaults = $settings['defaults'];
 			}
 
 			if (isset($settings['whitelist']) && !empty($settings['whitelist'])) {
@@ -184,6 +196,9 @@ class FilterComponent extends Object {
  */
 	function processFilters(&$controller){
 		$controller = $this->_prepareFilter($controller);
+
+		// Set default filter values
+		$controller->data = array_merge($this->defaults, $controller->data);
 
 		if (isset($controller->data)) {
 			foreach ($controller->data as $model => $fields) {
