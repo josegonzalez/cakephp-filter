@@ -98,7 +98,7 @@ class FilterComponent extends Object {
  */
 	function initialize(&$controller, $settings = array()) {
 		if (isset($settings['actions']) && !empty($settings['actions'])) {
-			$this->actions = $settings['actions'];
+			$this->actions = (array) $settings['actions'];
 		}
 
 		if (in_array($controller->action, $this->actions)){
@@ -115,7 +115,7 @@ class FilterComponent extends Object {
 			}
 
 			if (isset($settings['whitelist']) && !empty($settings['whitelist'])) {
-				$this->whitelist = $settings['whitelist'];
+				$this->whitelist = (array) $settings['whitelist'];
 			}
 
 			$this->processAction($controller);
