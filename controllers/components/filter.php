@@ -127,7 +127,7 @@ class FilterComponent extends Object {
 			$this->paginate = array();
 			$this->url = '/';
 			$controller->viewVars['filterOptions'] = array();
-			$controller->redirect("/{$controller->name}/{$controller->action}");
+			$controller->redirect('/'.strtolower($controller->name)."/{$controller->action}");
 			return;
 		}
 		$this->processFilters($controller);
@@ -210,6 +210,7 @@ class FilterComponent extends Object {
 		}
 		//If redirect has been set true, and the data had not been parsed before and put into the url, does it now
 		if (!$this->parsed && $this->redirect){
+            foreach ($this->url as $k => $v) $url .= "$k:$v";
 			$this->url = "/Filter.parsed:true{$this->url}";
 			$controller->redirect("/{$controller->name}/index{$this->url}/");
 		}
