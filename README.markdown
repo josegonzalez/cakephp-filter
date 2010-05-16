@@ -93,6 +93,10 @@ These different initialization options can be combined in the setup array.
 
 	`$this->Filter->initialize($this, array('useTime' => true));`
 
+- To set default values for your filters, add a line to the controller such as this:
+
+	`$this->Filter->initialize($this, array('defaults' => array('ModelName' => array('fieldName' => 'fieldValue'))));`
+
 ## Todo
 1. Better code commenting - Done, left to help enforce the habit
 2. <del>Support Datetime</del> Done
