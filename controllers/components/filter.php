@@ -78,14 +78,7 @@ class FilterComponent extends Object {
  *
  * @var string
  */
-	var $rangeSeparator = "-";
-
-/**
- * Actions upon which this component will act upon
- *
- * @var string
- */
-	var $actions = array('index');
+ 	var $rangeSeparator = "-";
 
 /**
  * Default filter values
@@ -93,6 +86,13 @@ class FilterComponent extends Object {
  * @var array
  */
 	var $defaults = array();
+
+/**
+ * Actions upon which this component will act upon
+ *
+ * @var string
+ */
+	var $actions = array('index');
 
 /**
  * Array of fields and models for which this component may filter
@@ -134,12 +134,12 @@ class FilterComponent extends Object {
 				$this->useTime = $settings['useTime'];
 			}
 
-			if (isset($settings['defaults']) && !empty($settings['defaults'])) {
-				$this->defaults = $settings['defaults'];
-			}
-
 			if (isset($settings['whitelist']) && !empty($settings['whitelist'])) {
 				$this->whitelist = $settings['whitelist'];
+			}
+
+			if (isset($settings['defaults']) && !empty($settings['defaults'])) {
+				$this->defaults = $settings['defaults'];
 			}
 
 			$this->processAction($controller);
@@ -154,6 +154,7 @@ class FilterComponent extends Object {
 			$controller->redirect("/{$controller->name}/{$controller->action}");
 			return;
 		}
+
 		$this->processFilters($controller);
 
 		foreach ($this->url as $key => $value) {
@@ -201,6 +202,7 @@ class FilterComponent extends Object {
 		$controller->data = array_merge($this->defaults, $controller->data);
 
 		if (isset($controller->data)) {
+			$redirectData = array();
 			foreach ($controller->data as $model => $fields) {
 				$modelFieldNames = array();
 				if (isset($controller->{$model})) {
@@ -229,6 +231,12 @@ class FilterComponent extends Object {
 						}
 					}
 				}
+				// Save model data for redirect
+				if ($this->redirect) {
+					foreach($controller->data[$model] as $key => $val) {
+						$redirectData["$model.$key"] = $val;
+					}
+				}
 				// Unset empty model data
 				if (count($fields) == 0){
 					unset($controller->data[$model]);
@@ -237,10 +245,27 @@ class FilterComponent extends Object {
 		}
 		//If redirect has been set true, and the data had not been parsed before and put into the url, does it now
 		if (!$this->parsed && $this->redirect){
-			$this->url = "/Filter.parsed:true{$this->url}";
-			$controller->redirect("/{$controller->name}/index{$this->url}/");
+			$this->url = "/Filter.parsed:true/{$this->_buildNamedParams($redirectData)}";
+			$controller->redirect("/{$controller->name}/index{$this->url}");
 		}
 	}
+
+/**
+ * Builds a named parameter list
+ *
+ * @return string
+ * @author cjab
+ **/
+	function _buildNamedParams($params) {
+		$paramString = '';
+
+		foreach ($params as $key => $value) {
+			$paramString .= "{$key}:{$value}/";
+		}
+
+		return $paramString;
+	}
+
 
 /**
  * Filters an individual field
@@ -258,6 +283,7 @@ class FilterComponent extends Object {
 				$filteredFieldData = $this->_prepareDatetime($filteredFieldData);
 			}
 		}
+
 		if ($filteredFieldData != '') {
 			if ((isset($this->whitelist[$model]) && is_array($this->whitelist[$model]) && !in_array('*', $this->whitelist[$model]) && !in_array($filteredFieldName, $this->whitelist[$model])) || (!isset($this->whitelist[$model]) && !empty($this->whitelist))){
 				return;
