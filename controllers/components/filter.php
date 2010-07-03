@@ -151,7 +151,7 @@ class FilterComponent extends Object {
 			$this->paginate = array();
 			$this->url = '/';
 			$controller->viewVars['filterOptions'] = array();
-			$controller->redirect("/{$controller->name}/{$controller->action}");
+			$controller->redirect('/'.strtolower($controller->name)."/{$controller->action}");
 			return;
 		}
 
@@ -200,9 +200,9 @@ class FilterComponent extends Object {
 
 		// Set default filter values
 		$controller->data = array_merge($this->defaults, $controller->data);
+		$redirectData = array();
 
 		if (isset($controller->data)) {
-			$redirectData = array();
 			foreach ($controller->data as $model => $fields) {
 				$modelFieldNames = array();
 				if (isset($controller->{$model})) {
