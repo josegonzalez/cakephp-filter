@@ -74,6 +74,20 @@ class FilterComponent extends Object {
 	var $separator = "/";
 
 /**
+ * Separator to use between dates in a date range
+ *
+ * @var string
+ */
+ 	var $rangeSeparator = "-";
+
+/**
+ * Default filter values
+ *
+ * @var array
+ */
+	var $defaults = array();
+
+/**
  * Actions upon which this component will act upon
  *
  * @var string
@@ -95,6 +109,8 @@ class FilterComponent extends Object {
  * @param array settings['redirect'] is whether after filtering is completed it should redirect and put the filters in the url,
  * @param array settings['useTime'] is whether to filter date times with date in addition to time
  * @param array settings['separator'] is the separator to use between fields in a date input
+ * @param array settings['rangeSeparator'] is the separator to use between dates in a date range input
+ * @param array settings['defaults'] is an array of default field values to be filtered on
  */
 	function initialize(&$controller, $settings = array()) {
 		if (isset($settings['actions']) && !empty($settings['actions'])) {
@@ -110,12 +126,20 @@ class FilterComponent extends Object {
 				$this->separator = $settings['separator'];
 			}
 
+			if (isset($settings['rangeSeparator']) && !empty($settings['rangeSeparator'])) {
+				$this->rangeSeparator = $settings['rangeSeparator'];
+			}
+
 			if (isset($settings['useTime']) && !empty($settings['useTime'])) {
 				$this->useTime = $settings['useTime'];
 			}
 
 			if (isset($settings['whitelist']) && !empty($settings['whitelist'])) {
 				$this->whitelist = (array) $settings['whitelist'];
+			}
+
+			if (isset($settings['defaults']) && !empty($settings['defaults'])) {
+				$this->defaults = $settings['defaults'];
 			}
 
 			$this->processAction($controller);
@@ -130,6 +154,7 @@ class FilterComponent extends Object {
 			$controller->redirect("/{$controller->name}/{$controller->action}");
 			return;
 		}
+
 		$this->processFilters($controller);
 
 		foreach ($this->url as $key => $value) {
@@ -173,7 +198,11 @@ class FilterComponent extends Object {
 	function processFilters(&$controller){
 		$controller = $this->_prepareFilter($controller);
 
+		// Set default filter values
+		$controller->data = array_merge($this->defaults, $controller->data);
+
 		if (isset($controller->data)) {
+			$redirectData = array();
 			foreach ($controller->data as $model => $fields) {
 				$modelFieldNames = array();
 				if (isset($controller->{$model})) {
@@ -202,6 +231,12 @@ class FilterComponent extends Object {
 						}
 					}
 				}
+				// Save model data for redirect
+				if ($this->redirect) {
+					foreach($controller->data[$model] as $key => $val) {
+						$redirectData["$model.$key"] = $val;
+					}
+				}
 				// Unset empty model data
 				if (count($fields) == 0){
 					unset($controller->data[$model]);
@@ -210,10 +245,27 @@ class FilterComponent extends Object {
 		}
 		//If redirect has been set true, and the data had not been parsed before and put into the url, does it now
 		if (!$this->parsed && $this->redirect){
-			$this->url = "/Filter.parsed:true{$this->url}";
-			$controller->redirect("/{$controller->name}/index{$this->url}/");
+			$this->url = "/Filter.parsed:true/{$this->_buildNamedParams($redirectData)}";
+			$controller->redirect("/{$controller->name}/index{$this->url}");
 		}
 	}
+
+/**
+ * Builds a named parameter list
+ *
+ * @return string
+ * @author cjab
+ **/
+	function _buildNamedParams($params) {
+		$paramString = '';
+
+		foreach ($params as $key => $value) {
+			$paramString .= "{$key}:{$value}/";
+		}
+
+		return $paramString;
+	}
+
 
 /**
  * Filters an individual field
@@ -231,6 +283,7 @@ class FilterComponent extends Object {
 				$filteredFieldData = $this->_prepareDatetime($filteredFieldData);
 			}
 		}
+
 		if ($filteredFieldData != '') {
 			if ((isset($this->whitelist[$model]) && is_array($this->whitelist[$model]) && !in_array('*', $this->whitelist[$model]) && !in_array($filteredFieldName, $this->whitelist[$model])) || (!isset($this->whitelist[$model]) && !empty($this->whitelist))){
 				return;
@@ -243,6 +296,17 @@ class FilterComponent extends Object {
 				$filteredFieldName = substr($filteredFieldName, 3);
 				$pieces = explode($this->separator, $filteredFieldData);
 				$this->paginate['conditions']["{$model}.{$filteredFieldName} <="] = "{$pieces[2]}/{$pieces[0]}/{$pieces[1]}";
+			} else if (substr($filteredFieldName, 0, 6) == 'RANGE_') {
+				$filteredFieldName = substr($filteredFieldName, 6);
+				$pieces = explode($this->rangeSeparator, $filteredFieldData);
+				$startDate = date('Y/m/d', strtotime($pieces[0]));
+				if(count($pieces) == 1) {
+					$this->paginate['conditions']["{$model}.{$filteredFieldName}"] = $startDate;
+				} else {
+					$this->paginate['conditions']["{$model}.{$filteredFieldName} >="] = $startDate;
+					$endDate = date('Y/m/d', strtotime($pieces[1]));
+					$this->paginate['conditions']["{$model}.{$filteredFieldName} <="] = $endDate;
+				}
 			} else if (isset($modelFieldNames[$filteredFieldName]) && isset($this->fieldFormatting[$modelFieldNames[$filteredFieldName]])) {
 				// insert value into fieldFormatting
 				$tmp = sprintf($this->fieldFormatting[$modelFieldNames[$filteredFieldName]], $filteredFieldData);
