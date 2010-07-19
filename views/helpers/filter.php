@@ -22,8 +22,8 @@ class FilterHelper extends Helper {
 			}
 		}
 		$output .= '<th>';
-		$output .= $this->Form->button(__('Filter', true), array('type' => 'submit', 'name' => 'data[filter]'))
-		$output .= $this->Form->button(__('Reset', true), array('type' => 'submit', 'name' => 'data[reset]'))
+		$output .= $this->Form->button(__('Filter', true), array('type' => 'submit', 'name' => 'data[filter]'));
+		$output .= $this->Form->button(__('Reset', true), array('type' => 'submit', 'name' => 'data[reset]'));
 		$output .= '</th>';
 		$output .= $this->Form->end();
 		$output .= '</tr>';
