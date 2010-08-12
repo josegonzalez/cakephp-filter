@@ -74,7 +74,7 @@ class FilterComponent extends Object {
  * @access public
  */
 	function initialize(&$controller, $settings = array()) {
-		$this->settings['actions'] = (empty($settings['action'])) ? $this->settings['actions'] : (array) $settings['actions'];
+		$this->settings['actions'] = (empty($settings['actions'])) ? $this->settings['actions'] : (array) $settings['actions'];
 
 		if (in_array($controller->action, $this->settings['actions'])) {
 			$settings['whitelist'] = (empty($settings['whitelist'])) ? array() : (array) $settings['whitelist'];
