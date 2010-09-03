@@ -87,7 +87,12 @@ class FilterComponent extends Object {
 
 	function processAction(&$controller) {
 		if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
-			$controller->redirect('/'. Inflector::underscore($controller->name)."/{$controller->action}");
+			$redirectUrl = Router::url(array(
+				'controller' => strtolower(Inflector::slug($controller->name, '_')),
+				'action' => $controller->action,
+				)
+			);
+			$controller->redirect($redirectUrl);
 			return;
 		}
 
