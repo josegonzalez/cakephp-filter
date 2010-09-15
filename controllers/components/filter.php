@@ -202,6 +202,7 @@ class FilterComponent extends Object {
 		$paramString = '';
 
 		foreach ($params as $key => $value) {
+			$value = urlencode($value);
 			$paramString .= "{$key}:{$value}/";
 		}
 
