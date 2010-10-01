@@ -90,8 +90,7 @@ class FilterComponent extends Object {
 			$redirectUrl = Router::url(array(
 				'controller' => strtolower(Inflector::slug($controller->name, '_')),
 				'action' => $controller->action,
-				)
-			);
+			));
 			$controller->redirect($redirectUrl);
 			return;
 		}
