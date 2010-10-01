@@ -66,6 +66,14 @@ class FilterComponent extends Object {
 	var $paginate = array('conditions' => array());
 
 /**
+ * Stores data for the current pagination set
+ *
+ * @var string
+ * @access private
+ **/
+	var $__data = array();
+
+/**
  * Initializes FilterComponent for use in the controller
  *
  * @param object $controller A reference to the instantiating controller object
@@ -138,14 +146,14 @@ class FilterComponent extends Object {
  * @access public
  */
 	function processFilters(&$controller) {
-		$controller = $this->__prepareFilter($controller);
+		$this->__prepareFilter($controller);
 
 		// Set default filter values
-		$controller->data = array_merge($this->settings['defaults'], $controller->data);
+		$this->__data = array_merge($this->settings['defaults'], $this->__data);
 		$redirectData = array();
 
-		if (isset($controller->data)) {
-			foreach ($controller->data as $model => $fields) {
+		if (isset($this->__data)) {
+			foreach ($this->__data as $model => $fields) {
 				$modelFieldNames = array();
 				if (isset($controller->{$model})) {
 					$modelFieldNames = $controller->{$model}->getColumnTypes();
@@ -175,13 +183,13 @@ class FilterComponent extends Object {
 				}
 				// Save model data for redirect
 				if ($this->settings['redirect'] === true) {
-					foreach ($controller->data[$model] as $key => $val) {
+					foreach ($this->__data[$model] as $key => $val) {
 						$redirectData["$model.$key"] = $val;
 					}
 				}
 				// Unset empty model data
 				if (count($fields) == 0) {
-					unset($controller->data[$model]);
+					unset($this->__data[$model]);
 				}
 			}
 		}
@@ -277,17 +285,16 @@ class FilterComponent extends Object {
  * Store sanitized version of filter data
  * 
  * @param object $controller Reference to controller
- * @return reference to controller
  * @access private
  */
 	function __prepareFilter(&$controller) {
-		$filter = array();
 		if (isset($controller->data)) {
-			foreach ($controller->data as $model => $fields) {
+			$this->__data = $controller->data;
+			foreach ($this->__data as $model => $fields) {
 				if (is_array($fields)) {
 					foreach ($fields as $key => $field) {
 						if ($field == '') {
-							unset($controller->data[$model][$key]);
+							unset($this->__data[$model][$key]);
 						}
 					}
 				}
@@ -295,16 +302,12 @@ class FilterComponent extends Object {
 
 			App::import('Sanitize');
 			$sanitize = new Sanitize();
-			$controller->data = $sanitize->clean($controller->data, array('encode' => false));
-			$filter = $controller->data;
+			$this->__data = $sanitize->clean($this->__data, array('encode' => false));
 		}
 
-		if (empty($filter)) {
-			$filter = $this->__checkParams($controller);
+		if (empty($this->__data)) {
+			$this->__data = $this->__checkParams($controller);
 		}
-
-		$controller->data = $filter;
-		return $controller;
 	}
 
 /**
