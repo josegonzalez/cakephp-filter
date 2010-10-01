@@ -8,7 +8,7 @@ class FilterHelper extends Helper {
 
 		if (!empty($fields)) {
 			foreach ($fields as $field) {
-				if (empty($field) || substr($field, -3, 3)=='_id') {
+				if (empty($field)) {
 					$output .= '<th>&nbsp;</th>';
 				} else {
 					$opts = array('label' => false);
