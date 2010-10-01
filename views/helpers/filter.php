@@ -12,7 +12,7 @@ class FilterHelper extends Helper {
 					$output .= '<th>&nbsp;</th>';
 				} else {
 					$opts = array('label' => false);
-					switch ($this->Form->fieldset['fields']["$model.$field"]['type']) {
+					switch ($this->Form->fieldset[$model]['fields'][$field]['type']) {
 						case "text":
 							$opts += array('type' => 'text');
 							break;
