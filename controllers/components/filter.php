@@ -113,17 +113,17 @@ class FilterComponent extends Object {
 /**
  * Builds up a selected datetime for the form helper
  * 
- * @param string $fieldname
+ * @param string $fieldname the name of the field to process
  * @return null|string
  */
-	function processDatetime($fieldname, $datetime = null) {
+	function processDatetime($fieldname) {
 		if (isset($this->params['named'][$fieldname])) {
 			$exploded = explode('-', $this->params['named'][$fieldname]);
 			if (!empty($exploded)) {
 				$datetime = '';
 				foreach ($exploded as $k => $e) {
 					$datetime = (empty($e)) ? (($k == 0) ? '0000' : '00') : $e;
-					if ($k != 2) {$datetime .= '-';}
+					if ($k != 2) $datetime .= '-';
 				}
 			}
 		}
@@ -133,11 +133,12 @@ class FilterComponent extends Object {
 /**
  * Function which will change controller->data array
  * 
- * @param object $controller the class of the controller which call this component
+ * @param object $controller Reference to controller
+ * @return void
  * @access public
  */
 	function processFilters(&$controller) {
-		$controller = $this->_prepareFilter($controller);
+		$controller = $this->__prepareFilter($controller);
 
 		// Set default filter values
 		$controller->data = array_merge($this->settings['defaults'], $controller->data);
@@ -153,21 +154,21 @@ class FilterComponent extends Object {
 				}
 				if (!empty($modelFieldNames)) {
 					foreach ($fields as $filteredFieldName => $filteredFieldData) {
-						$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
+						$this->__filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
 					}
 				} else {
 					if (isset($controller->{$controller->modelClass}->hasMany[$model])) {
 						$modelFieldNames = $controller->{$controller->modelClass}->{$model}->getColumnTypes();
 						if (!empty($modelFieldNames)) {
 							foreach ($fields as $filteredFieldName => $filteredFieldData) {
-								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
+								$this->__filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
 							}
 						}
 					} else if (isset($controller->{$controller->modelClass}->hasAndBelongsToMany[$model])) {
 						$modelFieldNames = $controller->{$controller->modelClass}->{$model}->getColumnTypes();
 						if (!empty($modelFieldNames)) {
 							foreach ($fields as $filteredFieldName => $filteredFieldData) {
-								$this->_filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
+								$this->__filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames);
 							}
 						}
 					}
@@ -186,7 +187,7 @@ class FilterComponent extends Object {
 		}
 		// If redirect has been set true, and the data had not been parsed before and put into the url, does it now
 		if ($this->settings['parsed'] === false && $this->settings['redirect'] === true) {
-			$this->settings['url'] = "/Filter.parsed:true/{$this->_buildNamedParams($redirectData)}";
+			$this->settings['url'] = "/Filter.parsed:true/{$this->__buildNamedParams($redirectData)}";
 			$controller->redirect("/{$controller->name}/index{$this->settings['url']}");
 		}
 	}
@@ -194,10 +195,12 @@ class FilterComponent extends Object {
 /**
  * Builds a named parameter list
  *
- * @return string
+ * @param array $params An array of parameters to parse
+ * @return string Parsed string of named parameters
+ * @access private
  * @author Chad Jablonski
  **/
-	function _buildNamedParams($params) {
+	function __buildNamedParams($params) {
 		$paramString = '';
 
 		foreach ($params as $key => $value) {
@@ -212,17 +215,22 @@ class FilterComponent extends Object {
 /**
  * Filters an individual field
  *
+ * @param string $model name of model
+ * @param string $filteredFieldName
+ * @param string|array $filteredFieldName
+ * @param array $modelFieldNames
  * @return array
+ * @access private
  * @author Jose Diaz-Gonzalez
  **/
-	function _filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames = array()) {
+	function __filterField($model, $filteredFieldName, $filteredFieldData, $modelFieldNames = array()) {
 		if (is_array($filteredFieldData)) {
 			if (!isset($modelFieldNames[$filteredFieldName])) {
-				if ($this->_arrayHasKeys($filteredFieldData, array('year', 'month', 'day'))) {
+				if ($this->__arrayHasKeys($filteredFieldData, array('year', 'month', 'day'))) {
 					$filteredFieldData = "{$filteredFieldData['month']}{$this->settings['separator']}{$filteredFieldData['day']}{$this->settings['separator']}{$filteredFieldData['year']}";
 				}
 			} else if ($modelFieldNames[$filteredFieldName] == 'datetime') {
-				$filteredFieldData = $this->_prepareDatetime($filteredFieldData);
+				$filteredFieldData = $this->__prepareDatetime($filteredFieldData);
 			}
 		}
 
@@ -266,12 +274,13 @@ class FilterComponent extends Object {
 	}
 
 /**
- * function which will take care of the storing the filter data and loading after this from the Session
- * JF: modified to not htmlencode, caused problems with dates e.g. -05-
+ * Store sanitized version of filter data
  * 
- * @param object $controller the class of the controller which call this component
+ * @param object $controller Reference to controller
+ * @return reference to controller
+ * @access private
  */
-	function _prepareFilter(&$controller) {
+	function __prepareFilter(&$controller) {
 		$filter = array();
 		if (isset($controller->data)) {
 			foreach ($controller->data as $model => $fields) {
@@ -291,7 +300,7 @@ class FilterComponent extends Object {
 		}
 
 		if (empty($filter)) {
-			$filter = $this->_checkParams($controller);
+			$filter = $this->__checkParams($controller);
 		}
 
 		$controller->data = $filter;
@@ -299,12 +308,13 @@ class FilterComponent extends Object {
 	}
 
 /**
- * function which will take care of filters from URL
- * JF: modified to not encode, caused problems with dates
+ * Parses named parameters from the current GET request
  * 
- * @param object $controller the class of the controller which call this component
+ * @param object $controller Reference to controller
+ * @return array Parsed params
+ * @access private
  */
-	function _checkParams(&$controller) {
+	function __checkParams(&$controller) {
 		if (empty($controller->params['named'])) {
 			$filter = array();
 		}
@@ -337,11 +347,12 @@ class FilterComponent extends Object {
 /**
  * Prepares a date array for a MySQL WHERE clause
  * 
- * @author Jeffrey Marvin
  * @param array $date
  * @return string
+ * @access private
+ * @author Jeffrey Marvin
  */
-	function _prepareDatetime($date) {
+	function __prepareDatetime($date) {
 		if ($this->settings['useTime'] === true) {
 			return  "{$date['year']}-{$date['month']}-{$date['day']}"
 				. ' ' . (($date['meridian'] == 'pm' && $date['hour'] != 12) ? $date['hour'] + 12 : $date['hour'])
@@ -358,9 +369,10 @@ class FilterComponent extends Object {
  * @param array $keys
  * @param boolean $size
  * @return boolean array has keys, optional check on size of array
- * @author savant
+ * @access private
+ * @author Jose Diaz-Gonzalez
  **/
-	function _arrayHasKeys($array, $keys, $size = null) {
+	function __arrayHasKeys($array, $keys, $size = null) {
 		if (count($array) != count($keys)) return false;
 
 		$array = array_keys($array);
@@ -372,4 +384,3 @@ class FilterComponent extends Object {
 		return true;
 	}
 }
-?>
