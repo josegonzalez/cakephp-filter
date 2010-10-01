@@ -182,7 +182,7 @@ class FilterComponent extends Object {
 					}
 				}
 				// Save model data for redirect
-				if ($this->settings['redirect'] === true) {
+				if ($this->settings['redirect'] && is_array($this->__data[$model])) {
 					foreach ($this->__data[$model] as $key => $val) {
 						$redirectData["$model.$key"] = $val;
 					}
