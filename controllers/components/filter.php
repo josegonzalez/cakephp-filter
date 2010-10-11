@@ -61,14 +61,21 @@ class FilterComponent extends Object {
 /**
  * Pagination array for component
  *
- * @var string
+ * @var array
  */
 	var $paginate = array('conditions' => array());
 
 /**
+ * Holds filterOptions for 1.2 Compatibility
+ *
+ * @var array
+ **/
+	var $filterOptions = array();
+
+/**
  * Stores data for the current pagination set
  *
- * @var string
+ * @var array
  * @access private
  **/
 	var $__data = array();
@@ -108,6 +115,10 @@ class FilterComponent extends Object {
 		foreach ($this->settings['url'] as $key => $value) {
 			$controller->params['named'][$key] = $value;
 		}
+		$this->filterOptions = array('url' => array_diff(
+			$controller->params['named'],
+			array('page' => 1, 'limit' => 20, 'sort' => 'val')
+		));
 
 		$this->settings['formOptionsDatetime'] = array(
 			'dateFormat' => 'DMY',

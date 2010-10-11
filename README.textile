@@ -32,6 +32,7 @@ h2. Usage
 	$posts = $this->paginate();
 	$this->set(compact('posts'));
 }</code></pre>
+
 # Finished example:
 
 <pre><code><?php
@@ -45,6 +46,28 @@ class PostsController extends AppController {
 	}
 }
 ?></code></pre>
+
+h3. Note on 1.2 usage
+
+In order for this to work in 1.2, you need to have the following in your controller:
+
+<pre><code><?php
+class PostsController extends AppController {
+	var $components = array('Filter.Filter');
+
+	function index() {
+		$this->paginate = $this->Filter->paginate;
+		$filterOptions = $this->Filter->filterOptions;
+		$posts = $this->paginate();
+		$this->set(compact('filterOptions', 'posts'));
+	}
+}
+?></code></pre>
+
+And then merge the $filterOptions variable on anything pagination uses. It can be set globally using PaginatorHelper::options() as follows (in the view):
+
+@<?php $paginator->options($filterOptions); ?>@
+
 
 h2. Advanced Usage
 
