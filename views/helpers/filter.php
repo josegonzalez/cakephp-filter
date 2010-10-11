@@ -29,12 +29,13 @@ class FilterHelper extends Helper {
 			if (empty($field)) {
 				$output .= '<th>&nbsp;</th>';
 			} else {
+				$opts = array('label' => false);
 				switch ($this->Form->fieldset['fields']["{$model}.{$field}"]['type']) {
 					case "text":
 						$opts += array('type' => 'text');
 						break;
 				}
-				$output .= '<th>' . $this->Form->input($field, array('label' => false)) . '</th>';
+				$output .= '<th>' . $this->Form->input($field, $opts) . '</th>';
 			}
 		}
 		return $output;
@@ -46,12 +47,13 @@ class FilterHelper extends Helper {
 			if (empty($field)) {
 				$output .= '<th>&nbsp;</th>';
 			} else {
+				$opts = array('label' => false);
 				switch ($this->Form->fieldset[$model]['fields'][$field]['type']) {
 					case "text":
 						$opts += array('type' => 'text');
 						break;
 				}
-				$output .= '<th>' . $this->Form->input($field, array('label' => false)) . '</th>';
+				$output .= '<th>' . $this->Form->input($field, $opts) . '</th>';
 			}
 		}
 		return $output;
