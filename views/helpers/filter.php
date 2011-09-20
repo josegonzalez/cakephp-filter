@@ -7,7 +7,7 @@ class FilterHelper extends Helper {
 		$output .= $this->Form->create($model, array('action' => 'index', 'id' => 'filters'));
 
 		if (!empty($fields)) {
-			$cakeVersion = substr(Configure::read('Cake.version'), 0, 2);
+			$cakeVersion = substr(Configure::read('Cake.version'), 0, 3);
 			if ($cakeVersion === '1.2') {
 				$output .= $this->_form12($model, $fields);
 			} else if ($cakeVersion === '1.3') {
