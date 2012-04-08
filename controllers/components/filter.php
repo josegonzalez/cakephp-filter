@@ -14,7 +14,7 @@
  * @package	app
  * @subpackage app.controller.components
  */
-class FilterComponent extends Object {
+class FilterComponent extends Component {
 
 /**
  * Default Component::$params
@@ -31,7 +31,7 @@ class FilterComponent extends Object {
  * rangeSeparator:		Separator to use between dates in a date range
  * url:					Url variable used in paginate helper (array('url'=>$url));
  * whitelist:			Array of fields and models for which this component may filter
- * 
+ *
  * @var array
  */
 	var $settings = array(
@@ -102,12 +102,10 @@ class FilterComponent extends Object {
 
 	function processAction(&$controller) {
 		if (isset($controller->data['reset']) || isset($controller->data['cancel'])) {
-			$redirectUrl = Router::url(array(
+			return $controller->redirect(array(
 				'controller' => Inflector::underscore($controller->name),
 				'action' => $controller->action,
 			));
-			$controller->redirect($redirectUrl);
-			return;
 		}
 
 		$this->processFilters($controller);
@@ -131,7 +129,7 @@ class FilterComponent extends Object {
 
 /**
  * Builds up a selected datetime for the form helper
- * 
+ *
  * @param string $fieldname the name of the field to process
  * @return null|string
  */
@@ -151,7 +149,7 @@ class FilterComponent extends Object {
 
 /**
  * Function which will change controller->data array
- * 
+ *
  * @param object $controller Reference to controller
  * @return void
  * @access public
@@ -294,7 +292,7 @@ class FilterComponent extends Object {
 
 /**
  * Store sanitized version of filter data
- * 
+ *
  * @param object $controller Reference to controller
  * @access private
  */
@@ -323,7 +321,7 @@ class FilterComponent extends Object {
 
 /**
  * Parses named parameters from the current GET request
- * 
+ *
  * @param object $controller Reference to controller
  * @return array Parsed params
  * @access private
@@ -360,7 +358,7 @@ class FilterComponent extends Object {
 
 /**
  * Prepares a date array for a MySQL WHERE clause
- * 
+ *
  * @param array $date
  * @return string
  * @access private
